@@ -32,6 +32,11 @@ typedef struct box_struct{
 	int dirty;
 } box;
 
+int past_value_score(tama t, value){
+
+	return 0;
+}
+
 tama init_tama(){
 	srand(time(NULL));
 	tama t;
@@ -88,7 +93,7 @@ void tama_advance_second(tama *t){
 	t->fragility -= 1;
 }
 
-char feed_tama(tama *t, int value){
+char feed(tama *t, int value){
 	if (t->love > MAX_LOVE/2){
 		t->food += value;
 		if (t->food > MAX_FOOD){
@@ -126,10 +131,6 @@ char feed_tama(tama *t, int value){
 	}
 }
 
-//~ char check(tama t){
-
-//~ }
-
 char inject(tama *t, int inj_id, int time){
 	if (t->drugs > 300){
 		return random_text_in(text_inject[INJECT_STOP]);
@@ -150,3 +151,29 @@ char inject(tama *t, int inj_id, int time){
 	return random_text_in(text_inject[INJECT_NORMAL_REACTION]);
 }
 
+char check(tama t){
+	srand(time(NULL));
+	if (rand()%2){
+		int c = rand()%8;
+		if (c == CHECK_FOOD){
+			float prct = t->food / MAX_FOOD;
+			return text_check[CHECK_FOOD][(int)prct * 8];
+		}
+		else if (c == CHECK_SLEEP){
+			float prct = t->sleep / MAX_SLEEP;
+			return text_check[CHECK_SLEEP][(int)prct *8];
+		}
+		else if (c == CHECK_DISEASE){
+			return text_check[CHECK_DISEASE][t->disease_type];
+		}
+		else if (c == CHECK_DRUGS){
+			return text_check[CHECK_DRUGS][t->drugs];
+		}
+		else{
+			return text_check[c][past_value_score(t, c)];
+		}
+	}
+	else{
+		return text_check_fun
+	}
+}
