@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "text.h"
+#include "tama_text.h"
 #include <math.h>
 #include <stdarg.h>
 
@@ -13,7 +13,7 @@
 #define MAX_LOVE 1000
 #define MAX_MOOD 1000
 
-#define NB_PERSONALITIES 5
+#define NB_PERSONALITIES 4
 
 int random_text_in(char *liste[]){
 	srand(time(NULL));
@@ -57,7 +57,6 @@ tama init_tama(){
 			t.past_disease[i/2][1] = 0;
 		}
 	}
-
 	t.fragility = 0;
 	return t;
 }
@@ -75,8 +74,6 @@ void tama_advance_second(tama *t){
 	t->disease_time_elapsed += 1;
 	t->drugs_time -= 1;
 	t->age += 1;
-
-
 
 	if (!t->age%43200){
 		for (int i = 1 ; i < 8 ; i++){
@@ -129,13 +126,8 @@ char feed_tama(tama *t, int value){
 	}
 }
 
-//~ string check(tama t){
-	//~ if (){
-		//~ return random_text_in(text_check_warnings[]);
-	//~ }
+//~ char check(tama t){
 
-
-	//~ return random_text_in(text_check[]);
 //~ }
 
 char inject(tama *t, int inj_id, int time){
