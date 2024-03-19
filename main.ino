@@ -1,4 +1,4 @@
-//#include "tama.h"
+#include "tama.h"
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -90,7 +90,7 @@ void setup() {
 }
 
 void loop(){
-  Serial.println(text_feed[0][0])
+  Serial.println(text_feed[0][0]);
 }
 
 
