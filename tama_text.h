@@ -91,7 +91,7 @@ const char * text_inject[4][3] =
 #define CHECK_PAST_LOVE 5
 #define CHECK_PAST_SLEEP 6
 
-const char * text_check_warnings[7][2] = // value, value %
+const char * text_check_warnings[7][3] = // value, value %
 {
 	{
 		"warning food 0",

@@ -178,59 +178,7 @@ int past_value_score(tama *t, int c_value){
 char *check(tama *t){
 	srand(time(NULL));
 	if (rand()%2){
-		int c = rand()%8;
-		if (c == CHECK_FOOD){
-			float prct = t->food / MAX_FOOD;
-			return text_check[CHECK_FOOD][(int)prct * 8];
-		}
-		else if (c == CHECK_SLEEP){
-			float prct = t->sleep / MAX_SLEEP;
-			return text_check[CHECK_SLEEP][(int)prct *8];
-		}
-		else if (c == CHECK_DISEASE){
-			return text_check[CHECK_DISEASE][t->disease_type];
-		}
-		else if (c == CHECK_DRUGS){
-			return text_check[CHECK_DRUGS][t->drugs];
-		}
-		else{
-			return text_check[c][past_value_score(t, c)];
-		}
+    return text_check_warnings[0][0];
 	}
-	else{
-		int pers_used = rand()%3;
-		if (pers_used == 1){
-			pers_used = t->pers_type%10;
-		}
-		else if (pers_used == 2){
-			pers_used = t->pers_type/10;
-		}
-
-		int which_phrase = rand()%3;
-
-		int value = rand()%2;
-		int evaluation;
-		if (!value){
-			float prct = t->love / MAX_LOVE;
-			evaluation = (int)prct*8;
-			if (which_phrase == 0){
-				t->love -= MAX_LOVE/100;
-			}
-			else if (which_phrase == 2){
-				t->love += MAX_LOVE/100 + MAX_LOVE / 200;
-			}
-		}
-		else{
-			float prct = t->mood / MAX_MOOD;
-			evaluation = (int)prct*8;
-			if (which_phrase == 0){
-				t->mood -= MAX_MOOD/100;
-			}
-			else if (which_phrase == 2){
-				t->mood += MAX_MOOD/100 + MAX_MOOD / 200;
-			}
-		}
-
-		return text_check_fun[pers_used][value][evaluation][which_phrase];
-	}
+	return text_check_warnings[0][1];
 }
