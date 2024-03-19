@@ -1,9 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include "tama_text.h"
-#include <math.h>
-#include <stdarg.h>
+#include "tama.h"
 
 #define BOX_AMOUNT 12
 #define PER_BOX 16
@@ -15,9 +10,9 @@
 
 #define NB_PERSONALITIES 4
 
-int random_text_in(char *liste[]){
+char *random_text_in(char *liste[]){
 	srand(time(NULL));
-	return rand()%sizeof(*liste)/sizeof(*liste[0]);
+	return liste[rand()%sizeof(*liste)/sizeof(*liste[0])];
 }
 
 typedef struct tama_struct{
@@ -32,10 +27,6 @@ typedef struct box_struct{
 	int dirty;
 } box;
 
-int past_value_score(tama t, value){
-
-	return 0;
-}
 
 tama init_tama(){
 	srand(time(NULL));
@@ -43,7 +34,7 @@ tama init_tama(){
 	t.food = MAX_FOOD/4 + (rand()%MAX_FOOD/4);
 	t.love = MAX_LOVE/4 + (rand()%MAX_LOVE/2);
 	t.mood = MAX_MOOD/2 + (rand()%MAX_MOOD/4);
-	t.pers_type = rand()%NB_PERSONALITIES;
+	t.pers_type = rand()%NB_PERSONALITIES + ((rand()%NB_PERSONALITIES)*10);
 	t.sleep = MAX_SLEEP - (rand()%MAX_SLEEP/4);
 	t.disease_type = 0;
 	t.disease_time_elapsed = 0;
@@ -66,19 +57,33 @@ tama init_tama(){
 	return t;
 }
 
+box init_box(){
+  box b;
+  b.light = 0;
+  b.dirty = 0;
+  b.food_ready = 0;
+  for (int i = 0 ; i < PER_BOX ; i++){
+    b.tamas[i] = init_tama();
+  }
+  return b;
+}
+
 void tama_advance_second(tama *t){
 	srand(time(NULL));
 	if (!t->sleeping){
-		t->food -= 1;
+		t->food--;
 	}
-	else if (!t->age %4){
-		t->food -= 1;
+	else{
+		if (!t->age %4){
+			t->food--;
+		}
+		t->sleep++;
 	}
 
-	t->sleep -= 1;
-	t->disease_time_elapsed += 1;
-	t->drugs_time -= 1;
-	t->age += 1;
+	t->sleep--;
+	t->disease_time_elapsed++;
+	t->drugs_time--;
+	t->age++;
 
 	if (!t->age%43200){
 		for (int i = 1 ; i < 8 ; i++){
@@ -90,17 +95,24 @@ void tama_advance_second(tama *t){
 		t->past_love[8] = t->love;
 		t->past_sleep[8] = t->sleep;
 	}
-	t->fragility -= 1;
+	t->fragility--;
 }
 
-char feed(tama *t, int value){
+char *feed(tama *t, int value){
+	t->love += value * MAX_LOVE / MAX_FOOD / 5;
+
 	if (t->love > MAX_LOVE/2){
+		t->mood += value * MAX_MOOD / MAX_FOOD / 2;
+
 		t->food += value;
 		if (t->food > MAX_FOOD){
 			t->fragility += t->food - MAX_FOOD;
 			t->food = MAX_FOOD;
+			t->mood = t->mood / 1.1;
 			return random_text_in(text_feed[FEED_TOO_MUCH]);
 		}
+
+		t->mood += value * MAX_MOOD / MAX_FOOD / 2;
 
 		if (t->food > MAX_FOOD/1.1){
 			return random_text_in(text_feed[FEED_FULL]);
@@ -118,6 +130,7 @@ char feed(tama *t, int value){
 	}
 	else{
 		if (!rand()%t->love/50){
+			t->mood += value * MAX_MOOD / MAX_FOOD / 2;
 			t->food += value;
 			if (t->food > MAX_FOOD){
 				t->fragility += t->food - MAX_FOOD;
@@ -131,12 +144,14 @@ char feed(tama *t, int value){
 	}
 }
 
-char inject(tama *t, int inj_id, int time){
+char *inject(tama *t, int inj_id, int time){
 	if (t->drugs > 300){
 		return random_text_in(text_inject[INJECT_STOP]);
 	}
 	if (t->love < MAX_LOVE/1.7){
+		t->mood -= MAX_MOOD/5;
 		if (!rand()%t->love/100){
+			t->love -= MAX_LOVE/10;
 			return random_text_in(text_inject[INJECT_FIGHT]);
 		}
 	}
@@ -145,13 +160,22 @@ char inject(tama *t, int inj_id, int time){
 	t->drugs_time = time;
 
 	if (t->love > MAX_LOVE/1.3){
+		t->mood -= MAX_MOOD/10;
 		return random_text_in(text_inject[INJECT_BRAVE]);
 	}
-
+	t->mood -= MAX_MOOD/7;
+	t->love -= MAX_LOVE/10;
 	return random_text_in(text_inject[INJECT_NORMAL_REACTION]);
 }
 
-char check(tama t){
+
+int past_value_score(tama *t, int c_value){
+
+	return 0;
+}
+
+
+char *check(tama *t){
 	srand(time(NULL));
 	if (rand()%2){
 		int c = rand()%8;
@@ -174,6 +198,39 @@ char check(tama t){
 		}
 	}
 	else{
-		return text_check_fun
+		int pers_used = rand()%3;
+		if (pers_used == 1){
+			pers_used = t->pers_type%10;
+		}
+		else if (pers_used == 2){
+			pers_used = t->pers_type/10;
+		}
+
+		int which_phrase = rand()%3;
+
+		int value = rand()%2;
+		int evaluation;
+		if (!value){
+			float prct = t->love / MAX_LOVE;
+			evaluation = (int)prct*8;
+			if (which_phrase == 0){
+				t->love -= MAX_LOVE/100;
+			}
+			else if (which_phrase == 2){
+				t->love += MAX_LOVE/100 + MAX_LOVE / 200;
+			}
+		}
+		else{
+			float prct = t->mood / MAX_MOOD;
+			evaluation = (int)prct*8;
+			if (which_phrase == 0){
+				t->mood -= MAX_MOOD/100;
+			}
+			else if (which_phrase == 2){
+				t->mood += MAX_MOOD/100 + MAX_MOOD / 200;
+			}
+		}
+
+		return text_check_fun[pers_used][value][evaluation][which_phrase];
 	}
 }

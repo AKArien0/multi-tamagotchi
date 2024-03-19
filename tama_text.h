@@ -1,3 +1,6 @@
+#ifndef TAMA_TEXT_H
+#define TAMA_TEXT_H
+
 #define FEED_FULL 0
 #define FEED_TOO_MUCH 1
 #define FEED_STILL_V_HUNGRY 2
@@ -183,7 +186,7 @@ char * text_check[8][8] = // value, value %
 	}
 };
 
-char * text_check_fun[5][2][8][3] = // personality, mood || love (own / interaction), value%, possibilites
+char * text_check_fun[5][2][8][3] = // personality, love || mood (interaction / mood), value%, possibilites
 {
 	{
 		{
@@ -699,3 +702,5 @@ char * text_check_fun[5][2][8][3] = // personality, mood || love (own / interact
 		}
 	}
 };
+
+#endif
