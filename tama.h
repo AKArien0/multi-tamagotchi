@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <time.h>
-#include "tama_text.h"
 
 #define BOX_AMOUNT 12
 #define PER_BOX 16

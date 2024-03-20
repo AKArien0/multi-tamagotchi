@@ -1,14 +1,5 @@
 #include "tama.h"
-
-#define BOX_AMOUNT 12
-#define PER_BOX 16
-
-#define MAX_SLEEP 16*60*60
-#define MAX_FOOD 5*60*60
-#define MAX_LOVE 1000
-#define MAX_MOOD 1000
-
-#define NB_PERSONALITIES 4
+#include "tama_text.h"
 
 char *random_text_in(char *liste[]){
 	srand(time(NULL));
