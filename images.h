@@ -1,25 +1,15 @@
-const unsigned int small_square[2] PROGMEM =
+image small_full PROGMEM =
 {
-  4294967295, 4294967295
+	2,
+	8,
+	{4294967295, 4294967295}
 };
 
-#define SIZE_BIG_SQUARE 2
-const unsigned int big_square[SIZE_BIG_SQUARE*SIZE_BIG_SQUARE][2] PROGMEM =
-{
-	{
-		4294967295, 4294967295
-	}
-	,
-	{
-		4294967295, 4294967295
-	}
-  ,
-  {
-		4294967295, 4294967295
-	}
-	,
-	{
-		4294967295, 4294967295
-	}
-};
+//~ image big_square PROGMEM =
+//~ {
+	//~ 8,
+	//~ 16
+	//~ {4294967295, 4294967295,4294967295, 4294967295, 4294967295, 4294967295, 4294967295, 4294967295}
+//~ };
+
 
