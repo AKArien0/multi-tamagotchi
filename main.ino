@@ -55,18 +55,18 @@ void setup() {
 	Serial.println("Setup complete");
 }
 
-
 void loop(){
 	//~ Serial.println(b_up.is_pressed());
 	//~ Serial.println(digitalRead(15));
-	draw_image(display, small_full, small_full_data, WHITE, 56, 16);
+  //~ Serial.println(small_full.data[1]);
+
+	draw_image(display, &small_full, WHITE, 56, 16);
 	display.display();
 	delay(500);
-	draw_image(display, small_full, small_full_data, BLACK, 56, 16);
+	draw_image(display, &small_full, BLACK, 56, 16);
 	display.display();
 	delay(500);
 }
-
 
 void Task_values(void * pvParameters){
 	static long unsigned int seconds_counted = 0;

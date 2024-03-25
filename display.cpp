@@ -5,13 +5,13 @@ int TestBit(unsigned int number, int nth){
 	return ((alias >> nth) & 1);
 }
 
-void draw_image(Adafruit_SSD1306 &screen, image to_draw, unsigned int to_draw_data, int pixel_colour, int origin_x, int origin_y){
+void draw_image(Adafruit_SSD1306 &screen, image *to_draw, int pixel_colour, int origin_x, int origin_y){
 	for (int i = 0 ; i < 32 ; i++){
-		//~ Serial.print(i);
-		//~ Serial.print(" : ");
-		//~ Serial.println(to_draw.size);
-		//~ Serial.println(to_draw.break_point);
-		//~ Serial.println(to_draw.data[0]);
+		Serial.print(i);
+		Serial.print(" : ");
+		Serial.println(to_draw->size);
+		Serial.println(to_draw->break_point);
+		Serial.println(to_draw->data[0]);
 
 		delay(250);
 	}

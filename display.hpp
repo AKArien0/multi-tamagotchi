@@ -22,4 +22,4 @@ typedef struct image_struct{
 
 int TestBit(unsigned int number, int nth);
 
-void draw_image(Adafruit_SSD1306 &screen, image bit_image, int pixel_colour, int origin_x, int origin_y);
+void draw_image(Adafruit_SSD1306 &screen, image *to_draw, int pixel_colour, int origin_x, int origin_y);
