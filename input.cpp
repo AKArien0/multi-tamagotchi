@@ -2,31 +2,32 @@
 
 namespace Input{
 
-	Button::Button(int set_pin, int set_debounce_time){
+	Button::Button(int set_pin){
 		pin = set_pin;
-		debounce_time = set_debounce_time;
+		//~ debounce_time = set_debounce_time;
 		current_state = false;
 		last_state = false;
 	}
 
 	void Button::begin(){
 		pinMode(pin, INPUT_PULLUP);
-			attachInterruptArg(digitalPinToInterrupt(pin), interrupt_change_handler, this, CHANGE);
+		attachInterruptArg(digitalPinToInterrupt(pin), interrupt_change_handler, this, CHANGE);
 		//~ attachInterruptArg(digitalPinToInterrupt(pin), interrupt_falling_handler, this, FALLING);
 		//~ attachInterruptArg(digitalPinToInterrupt(pin), interrupt_rising_handler, this, RISING);
 
 	}
 
 	void Button::interrupt_change(){
-		if (millis() - debounce_last_measure > debounce_time){
+		//~ if (millis() - debounce_last_measure > debounce_time){
 			last_state = current_state;
-			current_state = !current_state;
-		}
-		debounce_last_measure = millis();
+			current_state = !digitalRead(pin);
+		//~ }
+		//~ debounce_last_measure = millis();
 	}
 
 	//~ void Button::interrupt_falling(){
 		//~ if (millis() - debounce_last_measure > debounce_time){
+			//~ last_state = current_state;
 			//~ current_state = true;
 		//~ }
 		//~ debounce_last_measure = millis();
@@ -34,7 +35,8 @@ namespace Input{
 
 	//~ void Button::interrupt_rising(){
 		//~ if (millis() - debounce_last_measure > debounce_time){
-			//~ current_state = true;
+			//~ last_state = current_state;
+			//~ current_state = false;
 		//~ }
 		//~ debounce_last_measure = millis();
 	//~ }

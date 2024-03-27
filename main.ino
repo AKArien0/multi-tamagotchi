@@ -9,12 +9,11 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 TaskHandle_t Task_values_handle;
 
-#define DEBOUNCE 10
-Input::Button b_up(18, DEBOUNCE);
-Input::Button b_down(5, DEBOUNCE);
-Input::Button b_left(17, DEBOUNCE);
-Input::Button b_right(16, DEBOUNCE);
-Input::Button b_select(4, DEBOUNCE);
+Input::Button b_up(18);
+Input::Button b_down(5);
+Input::Button b_left(17);
+Input::Button b_right(16);
+Input::Button b_select(4);
 
 void setup() {
 	Serial.begin(9600);
@@ -100,11 +99,11 @@ void loop(){
         Serial.println("select just released");
     }
 
-    b_up.verify();
-    b_down.verify();
-    b_left.verify();
-    b_right.verify();
-    b_select.verify();
+    //~ b_up.verify();
+    //~ b_down.verify();
+    //~ b_left.verify();
+    //~ b_right.verify();
+    //~ b_select.verify();
 }
 
 void Task_values(void * pvParameters){

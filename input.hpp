@@ -7,8 +7,8 @@ namespace Input{
 
 	class Button{
 		private:
-			int pin;
-			volatile int debounce_time, debounce_last_measure;
+			volatile int pin;
+			//~ volatile int debounce_time, debounce_last_measure;
 			volatile bool current_state, last_state;
 
 		public:
