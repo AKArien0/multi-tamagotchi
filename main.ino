@@ -99,6 +99,12 @@ void loop(){
     if (b_select.is_just_released()){
         Serial.println("select just released");
     }
+
+    b_up.verify();
+    b_down.verify();
+    b_left.verify();
+    b_right.verify();
+    b_select.verify();
 }
 
 void Task_values(void * pvParameters){

@@ -1,9 +1,9 @@
 #include <Arduino.h>
 
 namespace Input{
-	class Button;
-	static void interrupt_falling_handler(void *p);
-	static void interrupt_rising_handler(void *p);
+	static void interrupt_change_handler(void *p);
+	//~ static void interrupt_falling_handler(void *p);
+	//~ static void interrupt_rising_handler(void *p);
 
 	class Button{
 		private:
@@ -13,12 +13,14 @@ namespace Input{
 
 		public:
 			Button(int set_pin, int set_debounce_time);
-			void interrupt_falling();
-			void interrupt_rising();
+			void interrupt_change();
+			//~ void interrupt_falling();
+			//~ void interrupt_rising();
 			void begin();
 			bool is_pressed();
 			bool is_just_pressed();
 			bool is_just_released();
+			void verify();
 			~Button();
 	};
 
