@@ -10,11 +10,11 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 TaskHandle_t Task_values_handle;
 
 #define DEBOUNCE 10
-input::Button b_up(15, DEBOUNCE);
-input::Button b_down(2, DEBOUNCE);
-input::Button b_left(4, DEBOUNCE);
-input::Button b_right(16, DEBOUNCE);
-input::Button b_select(17, DEBOUNCE);
+Input::Button b_up(18, DEBOUNCE);
+Input::Button b_down(5, DEBOUNCE);
+Input::Button b_left(17, DEBOUNCE);
+Input::Button b_right(16, DEBOUNCE);
+Input::Button b_select(4, DEBOUNCE);
 
 void setup() {
 	Serial.begin(9600);
@@ -56,16 +56,49 @@ void setup() {
 }
 
 void loop(){
-	//~ Serial.println(b_up.is_pressed());
-	//~ Serial.println(digitalRead(15));
-  //~ Serial.println(small_full.data[1]);
+    if (b_up.is_just_pressed()){
+        Serial.println("up just pressed");
+    }
 
-	draw_image(display, &small_full, WHITE, 56, 16);
-	display.display();
-	delay(500);
-	draw_image(display, &small_full, BLACK, 56, 16);
-	display.display();
-	delay(500);
+    if (b_up.is_pressed()){
+        Serial.println("up pressed");
+    }
+
+    if (b_up.is_just_released()){
+        Serial.println("up just released");
+    }
+
+    if (b_down.is_just_pressed()){
+        Serial.println("down just pressed");
+    }
+
+    if (b_down.is_just_released()){
+        Serial.println("down just released");
+    }
+
+    if (b_left.is_just_pressed()){
+        Serial.println("left just pressed");
+    }
+
+    if (b_left.is_just_released()){
+        Serial.println("left just released");
+    }
+
+    if (b_right.is_just_pressed()){
+        Serial.println("right just pressed");
+    }
+
+    if (b_right.is_just_released()){
+        Serial.println("right just released");
+    }
+
+    if (b_select.is_just_pressed()){
+        Serial.println("select just pressed");
+    }
+
+    if (b_select.is_just_released()){
+        Serial.println("select just released");
+    }
 }
 
 void Task_values(void * pvParameters){

@@ -1,16 +1,20 @@
 #include <Arduino.h>
 
-namespace input{
+namespace Input{
+	class Button;
+	static void interrupt_falling_handler(void *p);
+	static void interrupt_rising_handler(void *p);
+
 	class Button{
 		private:
 			int pin;
-			inline static volatile int debounce_time, debounce_last_measure;
-			inline static volatile bool current_state, last_state;
-			static void interrupt_falling();
-			static void interrupt_rising();
+			volatile int debounce_time, debounce_last_measure;
+			volatile bool current_state, last_state;
 
 		public:
 			Button(int set_pin, int set_debounce_time);
+			void interrupt_falling();
+			void interrupt_rising();
 			void begin();
 			bool is_pressed();
 			bool is_just_pressed();
