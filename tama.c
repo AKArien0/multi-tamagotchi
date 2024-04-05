@@ -165,6 +165,9 @@ int past_value_score(tama *t, int c_value){
 	return 0;
 }
 
+char *clean(tama *t){
+
+}
 
 char *check(tama *t){
 	srand(time(NULL));

@@ -1,4 +1,4 @@
-#include "input.hpp"
+#include "Input.hpp"
 
 namespace Input{
 
@@ -61,9 +61,9 @@ namespace Input{
 		return false;
 	}
 
-	void Button::verify(){
-		current_state = !digitalRead(pin);
-	}
+	//~ void Button::verify(){
+		//~ current_state = !digitalRead(pin);
+	//~ }
 
 	Button::~Button(){
 		detachInterrupt(pin);
@@ -83,5 +83,6 @@ namespace Input{
 		//~ Button *bt = (Button*) p;
 		//~ bt->interrupt_rising();
 	//~ }
+
 }
 

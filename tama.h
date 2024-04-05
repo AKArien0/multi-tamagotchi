@@ -29,4 +29,6 @@ char *feed(tama *t, int value);
 
 char *inject(tama *t, int inj_id, int time);
 
+char *clean(tama *t);
+
 char *check(tama *t);

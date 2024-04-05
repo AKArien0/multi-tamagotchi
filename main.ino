@@ -1,19 +1,36 @@
 #include "tama.h"
 
-#include "input.hpp"
+#include "Input.hpp"
 
-#include "display.hpp"
-#include "images.h"
+#ifndef SPI_H
+#include <SPI.h>
+#endif
+#ifndef WIRE_H
+#include <Wire.h>
+#endif
+#ifndef ADAFRUIT_GFX_H
+#include <Adafruit_GFX.h>
+#endif
+#ifndef Adafruit_SSD1306_H
+#include <Adafruit_SSD1306.h>
+#endif
 
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+
+// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
+#define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-TaskHandle_t Task_values_handle;
+TaskHandle_t Task_update_handle;
 
 Input::Button b_up(18);
 Input::Button b_down(5);
 Input::Button b_left(17);
 Input::Button b_right(16);
 Input::Button b_select(4);
+
+GUI::MatriceMenu tama_menu(display, 3, 2);
 
 void setup() {
 	Serial.begin(9600);
@@ -25,23 +42,17 @@ void setup() {
 		for(;;); // Don't proceed, loop forever
 	}
 
-	// Show initial display buffer contents on the screen --
-	// the library initializes this with an Adafruit splash screen.
 	display.display();
-	delay(2000); // Pause for 2 seconds
 
-	// Clear the buffer
-	display.clearDisplay();
-	//draw_image(display, big_square, SIZE_BIG_SQUARE, WHITE, 0, 0);
-	display.display();
+
 
 	xTaskCreatePinnedToCore(
-		Task_values,
-		"Updating values in memory",
+		Task_update,
+		"Updating values and screen animations",
 		8192,
 		NULL,
 		1,
-		&Task_values_handle,
+		&Task_update_handle,
 		1
 	);
 
@@ -52,65 +63,71 @@ void setup() {
 	b_select.begin();
 
 	Serial.println("Setup complete");
+
+	display.clearDisplay();
+  display.display();
+}
+
+void text_wait(){
+  display.drawBitmap(
+  124,
+  12,
+  next_line_text_icon,
+  4,
+  4,
+  1
+  );
+  while (!b_select.is_just_pressed()){
+  }
+}
+
+void text_handler(char &phrase){
+	display.setTextSize(1);
+  display.set_Text_Color(SSD1306_WHITE);
+  display.set_cursor(0, 0);
+  for (int i = 0 ; i < size_of(*phrase)/size_of(*phrase[0])){
+    display.write(phrase[i]);
+    display.display();
+    if (i > x){
+      reset_text_zone();
+      for (int a = i - x ; a < x ; a++){
+        display.write(phrase[a]);
+      }
+      text_wait();
+      display.display();
+    }
+  }
+  while (!b_select.is_just_pressed()){
+    //wait
+  }
+  reset_text_zone();
 }
 
 void loop(){
-    if (b_up.is_just_pressed()){
-        Serial.println("up just pressed");
-    }
+  if (b_up.is_just_pressed()){
+  }
 
-    if (b_up.is_pressed()){
-        Serial.println("up pressed");
-    }
+  if (b_down.is_just_pressed()){
 
-    if (b_up.is_just_released()){
-        Serial.println("up just released");
-    }
+  }
+  if (b_left.is_just_pressed()){
 
-    if (b_down.is_just_pressed()){
-        Serial.println("down just pressed");
-    }
+  }
+  if (b_right.is_just_pressed()){
 
-    if (b_down.is_just_released()){
-        Serial.println("down just released");
-    }
+  }
 
-    if (b_left.is_just_pressed()){
-        Serial.println("left just pressed");
-    }
+  if (b_select.is_just_pressed()){
 
-    if (b_left.is_just_released()){
-        Serial.println("left just released");
-    }
-
-    if (b_right.is_just_pressed()){
-        Serial.println("right just pressed");
-    }
-
-    if (b_right.is_just_released()){
-        Serial.println("right just released");
-    }
-
-    if (b_select.is_just_pressed()){
-        Serial.println("select just pressed");
-    }
-
-    if (b_select.is_just_released()){
-        Serial.println("select just released");
-    }
-
-    //~ b_up.verify();
-    //~ b_down.verify();
-    //~ b_left.verify();
-    //~ b_right.verify();
-    //~ b_select.verify();
+  }
 }
 
-void Task_values(void * pvParameters){
-	static long unsigned int seconds_counted = 0;
+void Task_update(void * pvParameters){
+  long unsigned int seconds_counted = 0;
 	for (;;){
 		if (millis() > (seconds_counted*1000)){
 			seconds_counted++;
 		}
+    Serial.println(seconds_counted);
 	}
 }
