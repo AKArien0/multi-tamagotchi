@@ -14,10 +14,9 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <functional>
 
 namespace PTK{
-
-	void Begin(Adafruit_SSD1306 ssd);
 
 	class Widget{
 		protected:
@@ -118,13 +117,13 @@ namespace PTK{
 
 			public:
 				Container(int set_pos_x, int set_pos_y);
-				Container(int set_pos_x, int set_pos_y, std::vector<Widget*> set_children);
+				Container(int set_pos_x, int set_pos_y, std::vector<Widget*>* set_children);
 				void display();
 				void hide();
 				void change_pos(int new_pos_x, int new_pos_y);
-				std::vector<Widget*> get_children();
+				std::vector<Widget*>* get_children();
 				void add_child(Widget* new_child);
-				void add_children(std::vector<Widget*> new_children);
+				void add_children(std::vector<Widget*>* new_children);
 				~Container();
 		};
 };

@@ -2,12 +2,6 @@
 
 namespace PTK{
 
-	Adafruit_SSD1306 screen;
-
-	void Begin(Adafruit_SSD1306 ssd){
-		screen = ssd;
-	}
-
 	Widget::Widget(){
 		pos_x = 0;
 		pos_y = 0;
@@ -42,21 +36,21 @@ namespace PTK{
 			yy = dim_y;
 		}
 
-			void Image::display(){
-				screen.drawBitmap(
-					pos_x, pos_y,
-					image,
-					xx, yy,
-					WHITE);
-			}
+			//~ void Image::display(){
+				//~ screen.drawBitmap(
+					//~ pos_x, pos_y,
+					//~ image,
+					//~ xx, yy,
+					//~ WHITE);
+			//~ }
 
-			void Image::hide(){
-				screen.drawBitmap(
-					pos_x, pos_y,
-					image,
-					xx, yy,
-					BLACK);
-			}
+			//~ void Image::hide(){
+				//~ screen.drawBitmap(
+					//~ pos_x, pos_y,
+					//~ image,
+					//~ xx, yy,
+					//~ BLACK);
+			//~ }
 
 		Image::~Image(){
 			hide();
@@ -85,10 +79,6 @@ namespace PTK{
 			xx = span_x;
 			yy = span_y;
 		}
-
-			void TextBox::display(){
-
-			}
 
 			void TextBox::hide(){
 				set_text("");
@@ -218,10 +208,7 @@ namespace PTK{
 		}
 
 		Container::Container(int set_pos_x, int set_pos_y, std::vector<Widget*>* set_children) : Widget(set_pos_x, set_pos_y){
-			children = set_children;
-			for (int i = 0 ; i < children.size() ; i++){
-				children[i]->change_pos(children[i]->get_pos_x()+pos_x, children[i]->get_pos_y()+pos_y);
-			}
+			add_children(set_children);
 		}
 
 			void Container::change_pos(int new_pos_x, int new_pos_y){
@@ -244,7 +231,7 @@ namespace PTK{
 			}
 
 			std::vector<Widget*>* Container::get_children(){
-				return children;
+				return &children;
 			}
 
 			void Container::add_child(Widget* new_child){
@@ -253,7 +240,10 @@ namespace PTK{
 			}
 
 			void Container::add_children(std::vector<Widget*>* new_children){
-				children.insert(children.end(), new_children.begin(), new_children.end());
+				children.insert(children.end(), new_children->begin(), new_children->end());
+				for (int i = 0 ; i < children.size() ; i++){
+					children[i]->change_pos(children[i]->get_pos_x()+pos_x, children[i]->get_pos_y()+pos_y);
+				}
 			}
 
 		Container::~Container(){

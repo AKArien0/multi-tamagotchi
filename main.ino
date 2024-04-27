@@ -22,7 +22,25 @@
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+Adafruit_SSD1306 screen(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+namespace PTK{
+    void Image::display(){
+        screen.drawBitmap(
+            pos_x, pos_y,
+            image,
+            xx, yy,
+            WHITE);
+    }
+
+    void Image::hide(){
+        screen.drawBitmap(
+            pos_x, pos_y,
+            image,
+            xx, yy,
+            BLACK);
+    }
+};
 
 TaskHandle_t Task_update_handle;
 
@@ -39,12 +57,12 @@ void setup() {
     Serial.println("Alive");
 
     // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-    if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+    if(!screen.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
         Serial.println(F("SSD1306 allocation failed"));
         for(;;); // Don't proceed, loop forever
     }
 
-    display.display();
+    screen.display();
 
     b_up.begin(INPUT_PULLUP, 0);
     b_down.begin(INPUT_PULLUP, 0);
@@ -62,19 +80,18 @@ void setup() {
         1
     );
 
-    display.clearDisplay();
-    display.display();
+    screen.clearDisplay();
+    screen.display();
 
-    PTK::Begin(display);
 
     PTK::Image t_im(0, 0, icon_back, 16, 16);
-    display.drawBitmap(16, 0, icon_back, 16, 16, WHITE);
-    display.display();
+    screen.drawBitmap(16, 0, icon_back, 16, 16, WHITE);
+    screen.display();
     delay(2000);
 
     t_im.~Image();
-    display.drawBitmap(16, 0, icon_back, 16, 16, BLACK);
-    display.display();
+    screen.drawBitmap(16, 0, icon_back, 16, 16, BLACK);
+    screen.display();
 
     delay(2000);
 
@@ -88,10 +105,10 @@ void setup() {
     list.push_back(&itest);
     world.add_child(&i1);
     world.add_child(&i2);
-    world.add_children(list);
+    world.add_children(&list);
 
     world.display();
-    display.display();
+    screen.display();
 
     delay(1000);
 
