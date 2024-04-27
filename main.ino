@@ -1,19 +1,7 @@
 #include "tama.h"
 #include "images.h"
 #include "Input.hpp"
-
-#ifndef SPI_H
-#include <SPI.h>
-#endif
-#ifndef WIRE_H
-#include <Wire.h>
-#endif
-#ifndef ADAFRUIT_GFX_H
-#include <Adafruit_GFX.h>
-#endif
-#ifndef Adafruit_SSD1306_H
-#include <Adafruit_SSD1306.h>
-#endif
+#include "PTK.hpp"
 
 #ifndef SPI_H
 #include <SPI.h>
@@ -44,73 +32,99 @@ Input::Button b_left(17);
 Input::Button b_right(16);
 Input::Button b_select(4);
 
+PTK::Container world(0, 0);
 
 void setup() {
-  Serial.begin(9600);
-  Serial.println("Alive");
+    Serial.begin(9600);
+    Serial.println("Alive");
 
-  // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
-    Serial.println(F("SSD1306 allocation failed"));
-    for(;;); // Don't proceed, loop forever
-  }
+    // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+    if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+        Serial.println(F("SSD1306 allocation failed"));
+        for(;;); // Don't proceed, loop forever
+    }
 
-  display.display();
+    display.display();
 
-  b_up.begin(INPUT_PULLUP, 0);
-  b_down.begin(INPUT_PULLUP, 0);
-  b_left.begin(INPUT_PULLUP, 0);
-  b_right.begin(INPUT_PULLUP, 0);
-  b_select.begin(INPUT_PULLUP, 0);
+    b_up.begin(INPUT_PULLUP, 0);
+    b_down.begin(INPUT_PULLUP, 0);
+    b_left.begin(INPUT_PULLUP, 0);
+    b_right.begin(INPUT_PULLUP, 0);
+    b_select.begin(INPUT_PULLUP, 0);
 
-  xTaskCreatePinnedToCore(
-    Task_update,
-    "Updating values and screen animations",
-    8192,
-    NULL,
-    1,
-    &Task_update_handle,
-    0
+    xTaskCreatePinnedToCore(
+        Task_update,
+        "Updating values and screen animations",
+        8192,
+        NULL,
+        1,
+        &Task_update_handle,
+        1
     );
 
-  Serial.println("Setup complete");
+    display.clearDisplay();
+    display.display();
 
-  display.clearDisplay();
-  display.display();
-  }
+    PTK::Begin(display);
+
+    PTK::Image t_im(0, 0, icon_back, 16, 16);
+    display.drawBitmap(16, 0, icon_back, 16, 16, WHITE);
+    display.display();
+    delay(2000);
+
+    t_im.~Image();
+    display.drawBitmap(16, 0, icon_back, 16, 16, BLACK);
+    display.display();
+
+    delay(2000);
+
+    PTK::Image i1(16, 32, icon_back, 16, 16);
+    PTK::Image i2(16, 16, icon_back, 16, 16);
+    PTK::Image itest(48, 0, test, 0, 0);
+
+    std::vector<PTK::Widget*> list;
+    list.push_back(&i1);
+    list.push_back(&i2);
+    list.push_back(&itest);
+    world.add_child(&i1);
+    world.add_child(&i2);
+    world.add_children(list);
+
+    world.display();
+    display.display();
+
+    delay(1000);
+
+    Serial.println("Setup complete");
+}
 
 void loop(){
-  if (b_up.is_just_pressed()){
+    if (b_up.is_just_pressed()){
 
-  }
+    }
 
-  if (b_down.is_just_pressed()){
+    if (b_down.is_just_pressed()){
 
-  }
-  if (b_left.is_just_pressed()){
+    }
+    if (b_left.is_just_pressed()){
 
-  }
-  if (b_right.is_just_pressed()){
+    }
+    if (b_right.is_just_pressed()){
 
-  }
+    }
 
-  if (b_select.is_just_pressed()){
+    if (b_select.is_just_pressed()){
 
-  }
+    }
 
-  delay(2000);
-  Serial.print("Hello from loop on core ");
-  Serial.println(xPortGetCoreID());
 }
 
 void Task_update(void * pvParameters){
-  long unsigned int seconds_counted = 0;
-  for (;;){
-    if (millis() > (seconds_counted*1000)){
-      seconds_counted++;
-      Serial.println(seconds_counted);
-      Serial.print("Hello from task on core ");
-      Serial.println(xPortGetCoreID());
+    long unsigned int seconds_counted = 0;
+        for (;;){
+        if (millis() > (seconds_counted*1000)){
+            seconds_counted++;
+            Serial.println(seconds_counted);
+        }
     }
-  }
 }
