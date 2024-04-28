@@ -6,18 +6,6 @@ char *random_text_in(char *liste[]){
 	return liste[rand()%sizeof(*liste)/sizeof(*liste[0])];
 }
 
-typedef struct tama_struct{
-	unsigned int food, love, mood, pers_type, sleep, sleeping, disease_type, disease_time_elapsed, drugs, drugs_time, form, past_food[8], past_love[8], past_sleep[8], past_disease[4][2], fragility;
-	int64_t age;
-} tama;
-
-typedef struct box_struct{
-	int light;
-	tama tamas[TAMA_PER_BOX];
-	int64_t food_ready;
-	int dirty;
-} box;
-
 tama init_tama(){
 	srand(time(NULL));
 	tama t;
@@ -175,3 +163,15 @@ char *check(tama *t){
 	}
 	return text_check_warnings[0][1];
 }
+
+//~ int main(){
+	//~ box tama_boxes[TAMA_BOXES_AMOUNT];
+    //~ for (int i = 0 ; i < TAMA_BOXES_AMOUNT ; i++){
+        //~ tama_boxes[i] = init_box();
+    //~ }
+    //~ for (int i = 0 ; i < TAMA_BOXES_AMOUNT ; i++){
+		//~ for (int a = 0 ; a < TAMA_PER_BOX ; a++){
+			//~ tama_advance_second(&tama_boxes[i].tamas[a]);
+		//~ }
+	//~ }
+//~ }

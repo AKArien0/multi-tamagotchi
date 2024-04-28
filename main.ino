@@ -3,18 +3,10 @@
 #include "Input.hpp"
 #include "PTK.hpp"
 
-#ifndef SPI_H
 #include <SPI.h>
-#endif
-#ifndef WIRE_H
 #include <Wire.h>
-#endif
-#ifndef ADAFRUIT_GFX_H
 #include <Adafruit_GFX.h>
-#endif
-#ifndef Adafruit_SSD1306_H
 #include <Adafruit_SSD1306.h>
-#endif
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
@@ -50,9 +42,25 @@ Input::Button b_left(17);
 Input::Button b_right(16);
 Input::Button b_select(4);
 
-box[TAMA_BOXES_AMOUNT] tama_boxes;
-
 PTK::Container world(0, 0);
+
+box tama_boxes[TAMA_BOXES_AMOUNT];
+
+void back_callback(){
+
+}
+
+void feed_callback(){
+
+}
+
+void check_callback(){
+
+}
+
+void inject_callback(){
+
+}
 
 void setup() {
     Serial.begin(9600);
@@ -64,6 +72,7 @@ void setup() {
         for(;;); // Don't proceed, loop forever
     }
 
+    screen.clearDisplay();
     screen.display();
 
     b_up.begin(INPUT_PULLUP, 0);
@@ -73,15 +82,28 @@ void setup() {
     b_select.begin(INPUT_PULLUP, 0);
 
     for (int i = 0 ; i < TAMA_BOXES_AMOUNT ; i++){
-        tama_boxes[i] = init_box;
+        tama_boxes[i] = init_box();
     }
 
-    PTK::CursorMenu tama_menu(0, 16, 4, 4);
-    menu.add_child(PTK::Image(0, 16, icon_back, 16, 16), 0, 0, 1, 1, );
-    menu.add_child(PTK::Image(24, 16, icon_feed, 16, 16), 0, 1, 1, 1;
-    menu.add_child(PTK::Image())
+    static PTK::CursorMenu tama_menu(0, 16, 4, 4);
+    static PTK::Image back(8, 8, icon_back, 16, 16);
+    static PTK::Image feed(28, 8, icon_feed, 16, 16);
+    static PTK::Image check(48, 8, icon_light_on, 16, 16);
+    static PTK::Image inject(48, 28, icon_inject, 16, 16);
 
-    world.add_child()
+    tama_menu.add_child(&back, 0, 0, 1, 1, &back_callback);
+    tama_menu.add_child(&feed, 0, 1, 1, 1, &feed_callback);
+    tama_menu.add_child(&check, 0, 1, 1, 1, &check_callback);
+    tama_menu.add_child(&inject, 0, 1, 1, 1, &inject_callback);
+    Serial.println("Trying macros");
+    //~ tama_menu.add_cursor_redirection(0, 1, 1, 1, 2, 0);
+    //~ tama_menu.add_cursor_movement_cancel(1, 1, 1, 1);
+
+    world.add_child(&tama_menu);
+    world.display();
+    screen.display();
+
+    delay(2000);
 
     xTaskCreatePinnedToCore(
         Task_update,
@@ -93,8 +115,6 @@ void setup() {
         1
     );
 
-    screen.clearDisplay();
-    screen.display();
 
     Serial.println("Setup complete");
 }
@@ -128,9 +148,10 @@ void Task_update(void * pvParameters){
             Serial.println(seconds_counted);
             for (int i = 0 ; i < TAMA_BOXES_AMOUNT ; i++){
                 for (int a = 0 ; a < TAMA_PER_BOX ; a++){
-                    tama_advance_second(tama_boxes->tamas[TAMA_PER_BOX])
+                    tama_advance_second(&tama_boxes[i].tamas[a]);
                 }
             }
+            Serial.println("Done updating tamas");
         }
     }
 }

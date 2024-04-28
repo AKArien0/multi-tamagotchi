@@ -25,8 +25,8 @@ namespace PTK{
 		public:
 			Widget();
 			Widget(int set_pos_x, int set_pos_y);
-			virtual void display() = 0;
-			virtual void hide() = 0;
+			virtual void display();
+			virtual void hide();
 			virtual void change_pos(int new_pos_x, int new_pos_y);
 			int get_pos_x();
 			int get_pos_y();
@@ -35,11 +35,11 @@ namespace PTK{
 
 		class Image : public Widget{
 			protected:
-				unsigned char * image;
+				const unsigned char * image;
 				int xx, yy;
 
 			public:
-				Image(int set_pos_x, int set_pos_y, unsigned char * set_image, int dim_x, int dim_y);
+				Image(int set_pos_x, int set_pos_y, const unsigned char * set_image, int dim_x, int dim_y);
 				void display();
 				void hide();
 				~Image();
@@ -47,12 +47,12 @@ namespace PTK{
 
 			class Animation : public Image{
 				protected:
-					unsigned char ** anim;
+					const unsigned char ** anim;
 					int current_frame;
 					int anim_len;
 
 				public:
-					Animation(int set_pos_x, int set_pos_y, unsigned char ** set_anim, int dim_x, int dim_y);
+					Animation(int set_pos_x, int set_pos_y, const unsigned char ** set_anim, int dim_x, int dim_y);
 					void next_frame();
 					~Animation();
 			};
@@ -121,7 +121,7 @@ namespace PTK{
 				void hide();
 				void change_pos(int new_pos_x, int new_pos_y);
 				std::vector<Widget*>* get_children();
-				void add_child(Widget* new_child);
+				virtual void add_child(Widget* new_child);
 				void add_children(std::vector<Widget*>* new_children);
 				~Container();
 		};
@@ -143,7 +143,7 @@ namespace PTK{
 					CursorMenu(int set_pos_x, int set_pos_y, int bound_x, int bound_y);
 					void set_cursor_move_callback(void* set_callback);
 					void add_child(Widget* new_child, int rel_pos_x, int rel_pos_y, int dim_x, int dim_y, void (*callback)());
-					#define add_cursor_redirection(x, y, xx, yy, new_x, new_y) add_child(&Widget(new_x, new_y), x, y, xx, yy, NULL)
+					#define add_cursor_redirection(x, y, xx, yy, new_x, new_y) add_child(new PTK::Widget(new_x, new_y), x, y, xx, yy, NULL)
 					#define add_cursor_movement_cancel(x, y, xx, yy) add_child(NULL, x, y, xx, yy, NULL);
 					int move_cursor_by(int add_x, int add_y);
 					int move_cursor_to(int new_pos_x, int new_pos_y);

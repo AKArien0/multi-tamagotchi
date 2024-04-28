@@ -12,6 +12,12 @@ namespace PTK{
 		pos_y = set_pos_y;
 	}
 
+	void Widget::display(){
+	}
+
+	void Widget::hide(){
+	}
+
 	void Widget::change_pos(int new_pos_x, int new_pos_y){
 		hide();
 		pos_x = new_pos_x;
@@ -30,7 +36,7 @@ namespace PTK{
 	Widget::~Widget(){
 	}
 
-		Image::Image(int set_pos_x, int set_pos_y, unsigned char * set_image, int dim_x, int dim_y) : Widget(set_pos_x, set_pos_y){
+		Image::Image(int set_pos_x, int set_pos_y, const unsigned char * set_image, int dim_x, int dim_y) : Widget(set_pos_x, set_pos_y){
 			image = set_image;
 			xx = dim_x;
 			yy = dim_y;
@@ -56,7 +62,7 @@ namespace PTK{
 			hide();
 		}
 
-		Animation::Animation(int set_pos_x, int set_pos_y, unsigned char ** set_anim, int dim_x, int dim_y) : Image(set_pos_x, set_pos_y, set_anim[0], dim_x, dim_y){
+		Animation::Animation(int set_pos_x, int set_pos_y, const unsigned char ** set_anim, int dim_x, int dim_y) : Image(set_pos_x, set_pos_y, set_anim[0], dim_x, dim_y){
 			anim = set_anim;
 			current_frame = 0;
 			anim_len = sizeof(set_anim)/sizeof(set_anim[0]);
