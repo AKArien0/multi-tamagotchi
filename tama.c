@@ -13,11 +13,10 @@ typedef struct tama_struct{
 
 typedef struct box_struct{
 	int light;
-	tama tamas[PER_BOX];
+	tama tamas[TAMA_PER_BOX];
 	int64_t food_ready;
 	int dirty;
 } box;
-
 
 tama init_tama(){
 	srand(time(NULL));
@@ -53,7 +52,7 @@ box init_box(){
   b.light = 0;
   b.dirty = 0;
   b.food_ready = 0;
-  for (int i = 0 ; i < PER_BOX ; i++){
+  for (int i = 0 ; i < TAMA_PER_BOX ; i++){
     b.tamas[i] = init_tama();
   }
   return b;

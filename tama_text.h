@@ -6,7 +6,7 @@
 #define FEED_REFUSE 5
 #define FEED_ALMOST_REFUSE 6
 
-const char * text_feed[7][2] =
+char * text_feed[7][2] =
 {
 	{
 		"Il n'a plus faim.",
@@ -50,7 +50,7 @@ const char * text_feed[7][2] =
 #define INJECT_BRAVE 2
 #define INJECT_FIGHT 3
 
-const char * text_inject[4][3] =
+char * text_inject[4][3] =
 {
 	{
 		"Ce n'est pas raisonnable.",
@@ -91,7 +91,7 @@ const char * text_inject[4][3] =
 #define CHECK_PAST_LOVE 5
 #define CHECK_PAST_SLEEP 6
 
-const char * text_check_warnings[7][3] = // value, value %
+char * text_check_warnings[7][3] = // value, value %
 {
 	{
 		"warning food 0",

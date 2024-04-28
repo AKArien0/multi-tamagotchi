@@ -50,6 +50,8 @@ Input::Button b_left(17);
 Input::Button b_right(16);
 Input::Button b_select(4);
 
+box[TAMA_BOXES_AMOUNT] tama_boxes;
+
 PTK::Container world(0, 0);
 
 void setup() {
@@ -70,6 +72,17 @@ void setup() {
     b_right.begin(INPUT_PULLUP, 0);
     b_select.begin(INPUT_PULLUP, 0);
 
+    for (int i = 0 ; i < TAMA_BOXES_AMOUNT ; i++){
+        tama_boxes[i] = init_box;
+    }
+
+    PTK::CursorMenu tama_menu(0, 16, 4, 4);
+    menu.add_child(PTK::Image(0, 16, icon_back, 16, 16), 0, 0, 1, 1, );
+    menu.add_child(PTK::Image(24, 16, icon_feed, 16, 16), 0, 1, 1, 1;
+    menu.add_child(PTK::Image())
+
+    world.add_child()
+
     xTaskCreatePinnedToCore(
         Task_update,
         "Updating values and screen animations",
@@ -82,35 +95,6 @@ void setup() {
 
     screen.clearDisplay();
     screen.display();
-
-
-    PTK::Image t_im(0, 0, icon_back, 16, 16);
-    screen.drawBitmap(16, 0, icon_back, 16, 16, WHITE);
-    screen.display();
-    delay(2000);
-
-    t_im.~Image();
-    screen.drawBitmap(16, 0, icon_back, 16, 16, BLACK);
-    screen.display();
-
-    delay(2000);
-
-    PTK::Image i1(16, 32, icon_back, 16, 16);
-    PTK::Image i2(16, 16, icon_back, 16, 16);
-    PTK::Image itest(48, 0, test, 0, 0);
-
-    std::vector<PTK::Widget*> list;
-    list.push_back(&i1);
-    list.push_back(&i2);
-    list.push_back(&itest);
-    world.add_child(&i1);
-    world.add_child(&i2);
-    world.add_children(&list);
-
-    world.display();
-    screen.display();
-
-    delay(1000);
 
     Serial.println("Setup complete");
 }
@@ -142,6 +126,11 @@ void Task_update(void * pvParameters){
         if (millis() > (seconds_counted*1000)){
             seconds_counted++;
             Serial.println(seconds_counted);
+            for (int i = 0 ; i < TAMA_BOXES_AMOUNT ; i++){
+                for (int a = 0 ; a < TAMA_PER_BOX ; a++){
+                    tama_advance_second(tama_boxes->tamas[TAMA_PER_BOX])
+                }
+            }
         }
     }
 }

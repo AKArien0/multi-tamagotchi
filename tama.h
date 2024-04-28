@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define BOX_AMOUNT 12
-#define PER_BOX 16
+#define TAMA_BOXES_AMOUNT 6
+#define TAMA_PER_BOX 16
 
 #define MAX_SLEEP 16*60*60
 #define MAX_FOOD 5*60*60
