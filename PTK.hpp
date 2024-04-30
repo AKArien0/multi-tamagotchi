@@ -143,8 +143,8 @@ namespace PTK{
 					CursorMenu(int set_pos_x, int set_pos_y, int bound_x, int bound_y);
 					void set_cursor_move_callback(void* set_callback);
 					void add_child(Widget* new_child, int rel_pos_x, int rel_pos_y, int dim_x, int dim_y, void (*callback)());
-					#define add_movement_cancel(pos_x, pos_y, dim_x, dim_y) add_child(NULL, pos_x, pos_y, dim_x, dim_y, NULL)
-					#define add_instant_callback(pos_x, pos_y, dim_x, dim_y, callback) add_child(NULL, pos_x, pos_y, dim_x, dim_y, callback)
+					#define add_cursor_redirection(x, y, xx, yy, new_x, new_y) add_child(new PTK::Widget(new_x, new_y), x, y, xx, yy, NULL)
+					#define add_cursor_movement_cancel(x, y, xx, yy) add_child(NULL, x, y, xx, yy, NULL);
 					int move_cursor_by(int add_x, int add_y);
 					int move_cursor_to(int new_pos_x, int new_pos_y);
 					int get_cursor_x();
