@@ -19,10 +19,10 @@ namespace PTK{
 	}
 
 	void Widget::change_pos(int new_pos_x, int new_pos_y){
-		hide();
-		pos_x = new_pos_x;
-		pos_y = new_pos_y;
-		display();
+	    hide();
+	    pos_x = new_pos_x;
+	    pos_y = new_pos_y;
+	    display();
 	}
 
 	int Widget::get_pos_x(){
@@ -222,16 +222,16 @@ namespace PTK{
 		}
 
 			void Container::change_pos(int new_pos_x, int new_pos_y){
-				Widget::change_pos(new_pos_x, new_pos_y);
-				for (int i = 0 ; i < children.size() ; i++){
-					children[i]->change_pos(children[i]->get_pos_x()+pos_x, children[i]->get_pos_y()+pos_y);
-				}
+			    Widget::change_pos(new_pos_x, new_pos_y);
+			    for (int i = 0 ; i < children.size() ; i++){
+				    children[i]->change_pos(children[i]->get_pos_x()+pos_x, children[i]->get_pos_y()+pos_y);
+			    }
 			}
 
 			void Container::display(){
-				for (int i = 0 ; i < children.size() ; i++){
-					children[i]->display();
-				}
+			    for (int i = 0 ; i < children.size() ; i++){
+				    children[i]->display();
+			    }
 			}
 
 			void Container::hide(){
@@ -257,9 +257,9 @@ namespace PTK{
 			}
 
 		Container::~Container(){
-			for (int i = 0 ; i < children.size() ; i++){
-				delete children[i];
-			}
+		    for (int i = 0 ; i < children.size() ; i++){
+			    delete children[i];
+		    }
 		}
 
 			CursorMenu::CursorMenu(int set_pos_x, int set_pos_y, int bound_x, int bound_y) : Container(set_pos_x, set_pos_y){
@@ -297,13 +297,13 @@ namespace PTK{
 				}
 
 				int CursorMenu::move_cursor_to(int new_pos_x, int new_pos_y){
-					Widget* item = get_item_at(new_pos_x, new_pos_y);
-					if (get_item_at(new_pos_x, new_pos_y) == NULL){
+					int index = get_index_from_coords(new_pos_x, new_pos_y);
+					if (children[index] == NULL){
+					    if (children_callbacks[index] == NULL){
 						return 2;
-					}
-					if (children_callbacks[get_index_from_coords(new_pos_x, new_pos_y)] == NULL){
-						move_cursor_to(item->get_pos_x(), item->get_pos_y());
-						return 1;
+					    }
+					    children_callbacks[index]();
+					    return 1;
 					}
 					if (new_pos_x < 0){
 						new_pos_x = 0;
@@ -353,7 +353,6 @@ namespace PTK{
 			    delete[] children_pos_y.data();
 			    delete[] children_dim_x.data();
 			    delete[] children_dim_y.data();
-			    delete[] children_callbacks.data();
 			}
 
 			//~ class CursorMenu : public Container{
