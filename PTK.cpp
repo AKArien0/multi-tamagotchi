@@ -2,384 +2,249 @@
 
 namespace PTK{
 
-	Widget::Widget(){
-		pos_x = 0;
-		pos_y = 0;
+    Widget::Widget(){
+	pos_x = 0;
+	pos_y = 0;
+    }
+
+    Widget::Widget(int set_pos_x, int set_pos_y){
+	pos_x = set_pos_x;
+	pos_y = set_pos_y;
+    }
+
+    void Widget::display(){
+    }
+
+    void Widget::hide(){
+    }
+
+    void Widget::change_pos(int new_pos_x, int new_pos_y){
+	hide();
+	pos_x = new_pos_x;
+	pos_y = new_pos_y;
+	display();
+    }
+
+    int Widget::get_pos_x(){
+	return pos_x;
+    }
+
+    int Widget::get_pos_y(){
+	return pos_y;
+    }
+
+    Widget::~Widget(){
+    }
+
+	Image::Image(int set_pos_x, int set_pos_y, const unsigned char * set_image, int dim_x, int dim_y) : Widget(set_pos_x, set_pos_y){
+	    image = set_image;
+	    xx = dim_x;
+	    yy = dim_y;
 	}
 
-	Widget::Widget(int set_pos_x, int set_pos_y){
-		pos_x = set_pos_x;
-		pos_y = set_pos_y;
+		//~ void Image::display(){
+			//~ screen.drawBitmap(
+				//~ pos_x, pos_y,
+				//~ image,
+				//~ xx, yy,
+				//~ WHITE);
+		//~ }
+
+		//~ void Image::hide(){
+			//~ screen.drawBitmap(
+				//~ pos_x, pos_y,
+				//~ image,
+				//~ xx, yy,
+				//~ BLACK);
+		//~ }
+
+	Image::~Image(){
+	    hide();
 	}
 
-	void Widget::display(){
-	}
+	    Animation::Animation(int set_pos_x, int set_pos_y, const unsigned char ** set_anim, int dim_x, int dim_y) : Image(set_pos_x, set_pos_y, set_anim[0], dim_x, dim_y){
+		anim = set_anim;
+		current_frame = 0;
+		anim_len = sizeof(set_anim)/sizeof(set_anim[0]);
+	    }
 
-	void Widget::hide(){
-	}
-
-	void Widget::change_pos(int new_pos_x, int new_pos_y){
-		hide();
-		pos_x = new_pos_x;
-		pos_y = new_pos_y;
-		display();
-	}
-
-	int Widget::get_pos_x(){
-		return pos_x;
-	}
-
-	int Widget::get_pos_y(){
-		return pos_y;
-	}
-
-	Widget::~Widget(){
-	}
-
-		Image::Image(int set_pos_x, int set_pos_y, const unsigned char * set_image, int dim_x, int dim_y) : Widget(set_pos_x, set_pos_y){
-			image = set_image;
-			xx = dim_x;
-			yy = dim_y;
-		}
-
-			//~ void Image::display(){
-				//~ screen.drawBitmap(
-					//~ pos_x, pos_y,
-					//~ image,
-					//~ xx, yy,
-					//~ WHITE);
-			//~ }
-
-			//~ void Image::hide(){
-				//~ screen.drawBitmap(
-					//~ pos_x, pos_y,
-					//~ image,
-					//~ xx, yy,
-					//~ BLACK);
-			//~ }
-
-		Image::~Image(){
+		    void Animation::next_frame(){
 			hide();
-		}
-
-		Animation::Animation(int set_pos_x, int set_pos_y, const unsigned char ** set_anim, int dim_x, int dim_y) : Image(set_pos_x, set_pos_y, set_anim[0], dim_x, dim_y){
-			anim = set_anim;
-			current_frame = 0;
-			anim_len = sizeof(set_anim)/sizeof(set_anim[0]);
-		}
-
-			void Animation::next_frame(){
-				hide();
-				current_frame++;
-				if (current_frame > anim_len){
-					current_frame = 0;
-				}
-				display();
+			current_frame++;
+			if (current_frame > anim_len){
+				current_frame = 0;
 			}
+			display();
+		    }
 
-		Animation::~Animation(){
-		}
+	    Animation::~Animation(){
+	    }
 
-		TextBox::TextBox(int set_pos_x, int set_pos_y, std::string set_string, int span_x, int span_y) : Widget(set_pos_x, set_pos_y){
-			text = set_string;
-			xx = span_x;
-			yy = span_y;
-		}
+	TextBox::TextBox(int set_pos_x, int set_pos_y, std::string set_string, int span_x, int span_y) : Widget(set_pos_x, set_pos_y){
+	    text = set_string;
+	    xx = span_x;
+	    yy = span_y;
+	}
 
-			//~ void TextBox::display(){
+		//~ void TextBox::display(){
 
-			//~ }
-
-			void TextBox::hide(){
-				set_text("");
-				display();
-			}
-
-			void TextBox::set_text(std::string new_text){
-				text = new_text;
-				display();
-			}
-
-		TextBox::~TextBox(){
-			hide();
-		}
-
-		//~ CursorMenu::CursorMenu(int set_pos_x, int set_pos_y, int set_bound_x, int set_bound_y) : Widget(set_pos_x, set_pos_y){
-			//~ bounds[0] = set_bound_x;
-			//~ bounds[1] = set_bound_y;
-			//~ cursor[0] = 0;
-			//~ cursor[1] = 0;
-			//~ matrice = (CursorMenuItem *)malloc(bounds[0]*bounds[1]*sizeof(CursorMenuItem));
 		//~ }
 
-		//~ CursorMenu::CursorMenu(int set_pos_x, int set_pos_y, int set_bound_x, int set_bound_y, CursorMenuItem *set_matrice) : Widget(set_pos_x, set_pos_y){
-			//~ bounds[0] = set_bound_x;
-			//~ bounds[1] = set_bound_y;
-			//~ cursor[0] = 0;
-			//~ cursor[1] = 0;
-
-			//~ matrice = set_matrice;
-		//~ }
-
-			//~ void CursorMenu::add_item(CursorMenuItem new_item, int pos_x, int pos_y){
-				//~ matrice[pos_x*(pos_y*pos_x)] = new_item;
-			//~ }
-
-			//~ void CursorMenu::add_redirection(int pos_x, int pos_y, int to_x, int to_y){
-				//~ add_item(CURSOR_MENU_REDIRECTION(to_x, to_y), pos_x, pos_y);
-			//~ }
-
-			//~ void CursorMenu::add_movement_cancel(int pos_x, int pos_y){
-				//~ add_item(CURSOR_MENU_CANCEL, pos_x, pos_y);
-			//~ }
-
-			//~ void CursorMenu::move_cursor_by(int add_x, int add_y){
-				//~ if (get_item_at_cursor().get_child() == NULL){
-					//~ if ((get_item_at_cursor().get_pos_x() == -1) && (get_item_at_cursor().get_pos_y() == -1)){
-						//~ return;
-					//~ }
-					//~ move_cursor_to(get_item_at_cursor().get_pos_x(), get_item_at_cursor().get_pos_y()); // special case : childless CursorMenuItem who's position values are representative of where to place the cursor
-					//~ return;
-				//~ }
-				//~ cursor[0] += pos_x;
-				//~ cursor[1] += pos_y;
-				//~ if (cursor[0] < 0){
-					//~ cursor[0] = 0;
-				//~ }
-				//~ if (cursor[0] > bounds[0]){
-					//~ cursor[0] = bounds[0];
-				//~ }
-				//~ if (cursor[1] < 0){
-					//~ cursor[1] = 0;
-				//~ }
-				//~ if (cursor[1] > bounds[1]){
-					//~ cursor[1] = bounds[1];
-				//~ }
-
-			//~ }
-
-			//~ void CursorMenu::move_cursor_to(int new_pos_x, int new_pos_y){
-				//~ if (get_item_at_cursor().get_child() == NULL){
-					//~ if ((get_item_at_cursor().get_pos_x() == -1) && (get_item_at_cursor().get_pos_y() == -1)){
-						//~ return;
-					//~ }
-					//~ move_cursor_to(get_item_at_cursor().get_pos_x(), get_item_at_cursor().get_pos_y()); // special case : childless CursorMenuItem who's position values are representative of where to place the cursor
-					//~ return;
-				//~ }
-				//~ cursor[0] = new_pos_x;
-				//~ cursor[1] = new_pos_y;
-			//~ }
-
-			//~ CursorMenuItem CursorMenu::get_item_at_cursor(){
-				//~ return matrice[pos_x*(pos_y*pos_x)];
-			//~ }
-
-		//~ CursorMenu::~CursorMenu(){
-			//~ free(matrice);
-		//~ }
-
-		//~ CursorMenuItem::CursorMenuItem(int set_pos_x, int set_pos_y, Widget *set_child, void* set_callback) : Widget(set_pos_x, set_pos_y){
-			//~ child = set_child;
-			//~ callback = set_callback;
-		//~ }
-
-			//~ void CursorMenuItem::display(){
-				//~ child->display();
-			//~ }
-
-			//~ void CursorMenuItem::hide(){
-				//~ child->hide();
-			//~ }
-
-			//~ Widget* CursorMenuItem::get_child(){
-				//~ return child;
-			//~ }
-
-			//~ void CursorMenuItem::update_child(Widget* new_child){
-				//~ delete child;
-				//~ child = new_child;
-				//~ child->display();
-			//~ }
-
-			//~ void CursorMenuItem::change_callback(void* new_callback){
-				//~ callback = new_callback;
-			//~ }
-
-			//~ void CursorMenuItem::activate(){
-				//~ void (callback)();
-			//~ }
-
-		//~ CursorMenuItem::~CursorMenuItem(){
-			//~ delete child;
-		//~ }
-
-		Container::Container(int set_pos_x, int set_pos_y) : Widget(set_pos_x, set_pos_y){
-
+		void TextBox::hide(){
+		    set_text("");
+		    display();
 		}
 
-		Container::Container(int set_pos_x, int set_pos_y, std::vector<Widget*>* set_children) : Widget(set_pos_x, set_pos_y){
-			add_children(set_children);
+		void TextBox::set_text(std::string new_text){
+		    text = new_text;
+		    display();
 		}
 
-			void Container::change_pos(int new_pos_x, int new_pos_y){
-				Widget::change_pos(new_pos_x, new_pos_y);
-				for (int i = 0 ; i < children.size() ; i++){
-					children[i]->change_pos(children[i]->get_pos_x()+pos_x, children[i]->get_pos_y()+pos_y);
-				}
-			}
+	TextBox::~TextBox(){
+	    hide();
+	}
 
-			void Container::display(){
-				for (int i = 0 ; i < children.size() ; i++){
-					children[i]->display();
-				}
-			}
 
-			void Container::hide(){
-				for (int i = 0 ; i < children.size() ; i++){
-					children[i]->hide();
-				}
-			}
+	Container::Container(int set_pos_x, int set_pos_y) : Widget(set_pos_x, set_pos_y){
 
-			std::vector<Widget*>* Container::get_children(){
-				return &children;
-			}
+	}
 
-			void Container::add_child(Widget* new_child){
-				new_child->change_pos(new_child->get_pos_x()+pos_x, new_child->get_pos_y()+pos_y);
-				children.push_back(new_child); // random pixels problem
-			}
+	Container::Container(int set_pos_x, int set_pos_y, std::vector<Widget*>* set_children) : Widget(set_pos_x, set_pos_y){
+	    add_children(set_children);
+	}
 
-			void Container::add_children(std::vector<Widget*>* new_children){
-				children.insert(children.end(), new_children->begin(), new_children->end());
-				for (int i = 0 ; i < children.size() ; i++){
-					children[i]->change_pos(children[i]->get_pos_x()+pos_x, children[i]->get_pos_y()+pos_y);
-				}
-			}
-
-		Container::~Container(){
-			for (int i = 0 ; i < children.size() ; i++){
-				delete children[i];
-			}
+	    void Container::change_pos(int new_pos_x, int new_pos_y){
+		Widget::change_pos(new_pos_x, new_pos_y);
+		for (int i = 0 ; i < children.size() ; i++){
+		    children[i]->change_pos(children[i]->get_pos_x()+pos_x, children[i]->get_pos_y()+pos_y);
 		}
+	    }
 
-			CursorMenu::CursorMenu(int set_pos_x, int set_pos_y, int bound_x, int bound_y) : Container(set_pos_x, set_pos_y){
-				bounds[0] = bound_x;
-				bounds[1] = bound_y;
-				cursor_move_callback = NULL;
-			}
+	    void Container::display(){
+		for (int i = 0 ; i < children.size() ; i++){
+		    children[i]->display();
+		}
+	    }
 
-				int CursorMenu::get_index_from_coords(int x, int y){
-					for (int i = 0 ; i < children.size() ; i++){
-						if (x >= children_pos_x[i] && x <= children_pos_x[i]+children_dim_x[i]){
-							if (y >= children_pos_y[i] && y <= children_pos_y[i]+children_dim_y[i]){
-								return i;
-							}
-						}
-					}
-					return -1;
-				}
+	    void Container::hide(){
+		for (int i = 0 ; i < children.size() ; i++){
+		    children[i]->hide();
+		}
+	    }
 
-				void CursorMenu::set_cursor_move_callback(void* set_callback){
-					cursor_move_callback = set_callback;
-				}
+	    std::vector<Widget*>* Container::get_children(){
+		return &children;
+	    }
 
-				void CursorMenu::add_child(Widget* new_child, int rel_pos_x, int rel_pos_y, int dim_x, int dim_y, void (*callback)()){
-					children.push_back(new_child);
-					children_pos_x.push_back(rel_pos_x);
-					children_pos_y.push_back(rel_pos_y);
-					children_dim_x.push_back(dim_x);
-					children_dim_y.push_back(dim_y);
-					children_callbacks.push_back(callback);
-				}
+	    void Container::add_child(Widget* new_child){
+		//~ new_child->change_pos(new_child->get_pos_x()+pos_x, new_child->get_pos_y()+pos_y);
+		new_child->get_pos_x();
+		children.push_back(new_child); // random pixels problem
+	    }
 
-				int CursorMenu::move_cursor_by(int add_x, int add_y){
-					return move_cursor_to(get_cursor_x()+add_x, get_cursor_y()+add_y);
-				}
+	    void Container::add_children(std::vector<Widget*>* new_children){
+		children.insert(children.end(), new_children->begin(), new_children->end());
+		for (int i = 0 ; i < children.size() ; i++){
+			children[i]->change_pos(children[i]->get_pos_x()+pos_x, children[i]->get_pos_y()+pos_y);
+		}
+	    }
 
-				int CursorMenu::move_cursor_to(int new_pos_x, int new_pos_y){
-					Widget* item = get_item_at(new_pos_x, new_pos_y);
-					if (get_item_at(new_pos_x, new_pos_y) == NULL){
-						return 2;
-					}
-					if (children_callbacks[get_index_from_coords(new_pos_x, new_pos_y)] == NULL){
-						move_cursor_to(item->get_pos_x(), item->get_pos_y());
-						return 1;
-					}
-					if (new_pos_x < 0){
-						new_pos_x = 0;
-					}
-					if (new_pos_y < 0){
-						new_pos_y = 0;
-					}
-					if (new_pos_x > bounds[0]){
-						new_pos_x = bounds[0];
-					}
-					if (new_pos_y > bounds[1]){
-						new_pos_y = bounds[1];
-					}
-					cursor[0] = new_pos_x;
-					cursor[1] = new_pos_y;
-					return 0;
-				}
+	Container::~Container(){
+	    for (int i = 0 ; i < children.size() ; i++){
+		    delete children[i];
+	    }
+	}
 
-				int CursorMenu::get_cursor_x(){
-					return cursor[0];
-				}
+	    CursorMenu::CursorMenu(int set_pos_x, int set_pos_y, int bound_x, int bound_y) : Container(set_pos_x, set_pos_y){
+		bounds[0] = bound_x;
+		bounds[1] = bound_y;
+		cursor_move_callback = NULL;
+	    }
 
-				int CursorMenu::get_cursor_y(){
-					return cursor[1];
-				}
-
-				Widget* CursorMenu::get_item_at(int x, int y){
-					return children[get_index_from_coords(x, y)];
-				}
-
-				Widget* CursorMenu::get_item_at_cursor(){
-					get_item_at(cursor[0], cursor[1]);
-				}
-
-				void CursorMenu::activate(){
-					children_callbacks[get_index_from_coords(cursor[0], cursor[1])]();
-				}
-
-			CursorMenu::~CursorMenu(){
-				// codegemma's proposal :
-			    // Clean up allocated memory for children and their callbacks
-			    for (auto& child : children) {
-			        delete child;
+		int CursorMenu::get_index_from_coords(int x, int y){
+		    for (int i = 0 ; i < children.size() ; i++){
+			    if (x >= children_pos_x[i] && x <= children_pos_x[i]+children_dim_x[i]){
+				    if (y >= children_pos_y[i] && y <= children_pos_y[i]+children_dim_y[i]){
+					    return i;
+				    }
 			    }
-			    children.clear();
-			    delete[] children_pos_x.data();
-			    delete[] children_pos_y.data();
-			    delete[] children_dim_x.data();
-			    delete[] children_dim_y.data();
-			    delete[] children_callbacks.data();
+		    }
+		    return -1;
+		}
+
+		void CursorMenu::set_cursor_move_callback(void* set_callback){
+		    cursor_move_callback = set_callback;
+		}
+
+		void CursorMenu::add_child(Widget* new_child, int rel_pos_x, int rel_pos_y, int dim_x, int dim_y, void (*callback)()){
+		    children.push_back(new_child);
+		    children_pos_x.push_back(rel_pos_x);
+		    children_pos_y.push_back(rel_pos_y);
+		    children_dim_x.push_back(dim_x);
+		    children_dim_y.push_back(dim_y);
+		    children_callbacks.push_back(callback);
+		}
+
+		int CursorMenu::move_cursor_by(int add_x, int add_y){
+		    return move_cursor_to(get_cursor_x()+add_x, get_cursor_y()+add_y);
+		}
+
+		int CursorMenu::move_cursor_to(int new_pos_x, int new_pos_y){
+		    int index = get_index_from_coords(new_pos_x, new_pos_y);
+		    if (children[index] == NULL){
+			if (children_callbacks[index] == NULL){
+			    return 2;
 			}
+			children_callbacks[index]();
+			return 1;
+		    }
+		    if (new_pos_x < 0){
+			    new_pos_x = 0;
+		    }
+		    if (new_pos_y < 0){
+			    new_pos_y = 0;
+		    }
+		    if (new_pos_x > bounds[0]){
+			    new_pos_x = bounds[0];
+		    }
+		    if (new_pos_y > bounds[1]){
+			    new_pos_y = bounds[1];
+		    }
+		    cursor[0] = new_pos_x;
+		    cursor[1] = new_pos_y;
+		    return 0;
+		}
 
-			//~ class CursorMenu : public Container{
-				//~ protected:
-					//~ bounds[2];
-					//~ cursor[2];
-					//~ void* cursor_move_callback;
-					//~ int get_index_from_coords(int x, int y);
-					//~ std::vector<int> children_pos_x;
-					//~ std::vector<int> children_pos_y;
-					//~ std::vector<int> children_dim_x;
-					//~ std::vector<int> children_dim_y;
-					//~ std::vector<void*> children_callbacks;
+		int CursorMenu::get_cursor_x(){
+		    return cursor[0];
+		}
 
-				//~ public:
-					//~ CursorMenu(int set_pos_x, int set_pos_y, int bound_x, int bound_y);
-					//~ void set_cursor_move_callback(void* set_callback);
-					//~ void add_child(Widget* new_child, int rel_pos_x, int rel_pos_y, int dim_x, int dim_y, void* callback);
-					//~ #define add_cursor_redirection(x, y, xx, yy, new_x, new_y) add_child(&Widget(new_x, new_y), x, y, xx, yy, &move_cursor_to)
-					//~ #define add_cursor_movement_cancel(x, y, xx, yy) add_child(NULL, x, y, xx, yy, NULL);
-					//~ int move_cursor_by(int add_x, int add_y);
-					//~ int move_cursor_to(int new_pos_x, int new_pos_y);
-					//~ int get_cursor_x();
-					//~ int get_cursor_y();
-					//~ Widget* get_item_at(int x, int y);
-					//~ Widget* get_item_at_cursor();
-					//~ ~CursorMenu();
-			//~ };
+		int CursorMenu::get_cursor_y(){
+		    return cursor[1];
+		}
+
+		Widget* CursorMenu::get_item_at(int x, int y){
+		    return children[get_index_from_coords(x, y)];
+		}
+
+		Widget* CursorMenu::get_item_at_cursor(){
+		    get_item_at(cursor[0], cursor[1]);
+		}
+
+		void CursorMenu::activate(){
+		    children_callbacks[get_index_from_coords(cursor[0], cursor[1])]();
+		}
+
+	    CursorMenu::~CursorMenu(){
+		    // codegemma's proposal :
+		// Clean up allocated memory for children and their callbacks
+		for (auto& child : children) {
+		    delete child;
+		}
+		children.clear();
+		delete[] children_pos_x.data();
+		delete[] children_pos_y.data();
+		delete[] children_dim_x.data();
+		delete[] children_dim_y.data();
+	    }
 };

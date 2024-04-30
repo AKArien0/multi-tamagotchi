@@ -1,16 +1,3 @@
-#ifndef SPI_H
-#include <SPI.h>
-#endif
-#ifndef WIRE_H
-#include <Wire.h>
-#endif
-#ifndef ADAFRUIT_GFX_H
-#include <Adafruit_GFX.h>
-#endif
-#ifndef Adafruit_SSD1306_H
-#include <Adafruit_SSD1306.h>
-#endif
-
 #include <vector>
 #include <string>
 #include <iostream>
@@ -71,44 +58,6 @@ namespace PTK{
 				~TextBox();
 		};
 
-		//~ class CursorMenuItem : public Widget{
-			//~ protected:
-				//~ Widget *child;
-				//~ void* callback;
-
-			//~ public:
-				//~ CursorMenuItem(int set_pos_x, int set_pos_y, Widget *set_child, void* set_callback);
-				//~ void display();
-				//~ void hide();
-
-				//~ Widget* get_child();
-				//~ void update_child(Widget *new_child);
-				//~ void change_callback(void* new_callback);
-				//~ void activate();
-				//~ ~CursorMenuItem();
-		//~ };
-
-		//~ class CursorMenu : public Widget{
-			//~ protected:
-				//~ int cursor[2];
-				//~ int bounds[2];
-				//~ CursorMenuItem* matrice;
-
-			//~ public:
-				//~ CursorMenu(int set_pos_x, int set_pos_y, int set_bound_x, int set_bound_y);
-				//~ #define CURSOR_MENU_REDIRECTION(x, y) CursorMenuItem(x, y, NULL, NULL)
-				//~ #define CURSOR_MENU_CANCEL CursorMenuItem(-1, -1, NULL, NULL)
-				//~ CursorMenu(int set_pos_x, int set_pos_y, int set_bound_x, int set_bound_y, CursorMenuItem *set_matrice);
-				//~ void display();
-				//~ void hide();
-				//~ void add_item(CursorMenuItem new_item, int pos_x, int pos_y);
-				//~ void add_redirection(int pos_x, int pos_y, int to_x, int to_y);
-				//~ void add_movement_cancel(int pos_x, int pos_y);
-				//~ void move_cursor_by(int add_x, int add_y);
-				//~ void move_cursor_to(int new_pos_x, int new_pos_y);
-				//~ CursorMenuItem get_item_at_cursor();
-				//~ ~CursorMenu();
-		//~ };
 
 		class Container : public Widget{
 			protected:
@@ -143,8 +92,8 @@ namespace PTK{
 					CursorMenu(int set_pos_x, int set_pos_y, int bound_x, int bound_y);
 					void set_cursor_move_callback(void* set_callback);
 					void add_child(Widget* new_child, int rel_pos_x, int rel_pos_y, int dim_x, int dim_y, void (*callback)());
-					#define add_cursor_redirection(x, y, xx, yy, new_x, new_y) add_child(new PTK::Widget(new_x, new_y), x, y, xx, yy, NULL)
-					#define add_cursor_movement_cancel(x, y, xx, yy) add_child(NULL, x, y, xx, yy, NULL);
+					#define add_movement_cancel(pos_x, pos_y, dim_x, dim_y) add_child(NULL, pos_x, pos_y, dim_x, dim_y, NULL)
+					#define add_instant_callback(pos_x, pos_y, dim_x, dim_y, callback) add_child(NULL, pos_x, pos_y, dim_x, dim_y, callback)
 					int move_cursor_by(int add_x, int add_y);
 					int move_cursor_to(int new_pos_x, int new_pos_y);
 					int get_cursor_x();
