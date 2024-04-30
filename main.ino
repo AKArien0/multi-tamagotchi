@@ -43,7 +43,6 @@ Input::Button b_right(16);
 Input::Button b_select(4);
 
 PTK::Container world(0, 0);
-PTK::CursorMenu* current_menu;
 
 box tama_boxes[TAMA_BOXES_AMOUNT];
 
@@ -76,40 +75,31 @@ void setup() {
     screen.clearDisplay();
     screen.display();
 
-
     b_up.begin(INPUT_PULLUP, 0);
     b_down.begin(INPUT_PULLUP, 0);
     b_left.begin(INPUT_PULLUP, 0);
     b_right.begin(INPUT_PULLUP, 0);
     b_select.begin(INPUT_PULLUP, 0);
 
-
     for (int i = 0 ; i < TAMA_BOXES_AMOUNT ; i++){
         tama_boxes[i] = init_box();
     }
 
-    Serial.println("about to add");
-
-    // use new
     static PTK::CursorMenu tama_menu(0, 16, 4, 4);
-    static PTK::Image widget_back(8, 8, icon_back, 16, 16);
-    static PTK::Image widget_feed(28, 8, icon_feed, 16, 16);
-    static PTK::Image widget_check(48, 8, icon_light_on, 16, 16);
-    static PTK::Image widget_inject(48, 28, icon_inject, 16, 16);
+    static PTK::Image back(8, 8, icon_back, 16, 16);
+    static PTK::Image feed(28, 8, icon_feed, 16, 16);
+    static PTK::Image check(48, 8, icon_light_on, 16, 16);
+    static PTK::Image inject(48, 28, icon_inject, 16, 16);
 
-    tama_menu.add_child(&widget_back, 0, 0, 1, 1, &back_callback);
-    tama_menu.add_child(&widget_feed, 0, 1, 1, 1, &feed_callback);
-    tama_menu.add_child(&widget_check, 0, 2, 1, 1, &check_callback);
-    tama_menu.add_child(&widget_inject, 1, 0, 1, 1, &inject_callback);
-    tama_menu.add_movement_cancel(1, 1, 1, 1);
-    Serial.println("control");
-    //~ Serial.println("Trying macros");
+    tama_menu.add_child(&back, 0, 0, 1, 1, &back_callback);
+    tama_menu.add_child(&feed, 0, 1, 1, 1, &feed_callback);
+    tama_menu.add_child(&check, 0, 1, 1, 1, &check_callback);
+    tama_menu.add_child(&inject, 0, 1, 1, 1, &inject_callback);
+    Serial.println("Trying macros");
     //~ tama_menu.add_cursor_redirection(0, 1, 1, 1, 2, 0);
     //~ tama_menu.add_cursor_movement_cancel(1, 1, 1, 1);
 
     world.add_child(&tama_menu);
-    Serial.println("child added");
-    current_menu = &tama_menu;
     world.display();
     screen.display();
 
@@ -125,29 +115,29 @@ void setup() {
         1
     );
 
+
     Serial.println("Setup complete");
 }
 
 void loop(){
     if (b_up.is_just_pressed()){
-        current_menu->move_cursor_by(0, -1);
+
     }
+
     if (b_down.is_just_pressed()){
-        current_menu->move_cursor_by(0, 1);
+
     }
     if (b_left.is_just_pressed()){
-        current_menu->move_cursor_by(-1, 0);
+
     }
     if (b_right.is_just_pressed()){
-        current_menu->move_cursor_by(1, 0);
+
     }
+
     if (b_select.is_just_pressed()){
-        current_menu->activate();
+
     }
-    Serial.print("Coordinates : ");
-    Serial.print(current_menu->get_cursor_x());
-    Serial.print(", ");
-    Serial.println(current_menu->get_cursor_y());
+
 }
 
 void Task_update(void * pvParameters){
