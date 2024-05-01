@@ -44,10 +44,21 @@ Input::Button b_select(4);
 
 PTK::Container world(0, 0);
 
+PTK::CursorMenu* current_menu;
+
 box tama_boxes[TAMA_BOXES_AMOUNT];
 
-void back_callback(){
+void cursor_mov_callback(){
+    Serial.print("Index : ");
+    Serial.println(current_menu->get_index_from_coords(current_menu->get_cursor_x(), current_menu->get_cursor_y()));
+    Serial.println(current_menu->get_cursor_widget()->get_pos_x());
+}
 
+void test(){
+    Serial.println("test");
+}
+
+void back_callback(){
 }
 
 void feed_callback(){
@@ -85,21 +96,25 @@ void setup() {
         tama_boxes[i] = init_box();
     }
 
-    static PTK::CursorMenu tama_menu(0, 16, 4, 4);
-    static PTK::Image back(8, 8, icon_back, 16, 16);
-    static PTK::Image feed(28, 8, icon_feed, 16, 16);
-    static PTK::Image check(48, 8, icon_light_on, 16, 16);
-    static PTK::Image inject(48, 28, icon_inject, 16, 16);
+    static PTK::Image cursor(0, 0, image_cursor, 16, 16);
+    static PTK::CursorMenu tama_menu(8, 24, 2, 1, &cursor, 7, 7, 20, 20);
+    tama_menu.set_cursor_move_callback(&cursor_mov_callback);
+    static PTK::Image widget_back(0, 0, image_icon_back, 16, 16);
+    static PTK::Image widget_feed(20, 0, image_icon_feed, 16, 16);
+    static PTK::Image widget_check(40, 0, image_icon_check, 16, 16);
+    static PTK::Image widget_inject(40, 20, image_icon_inject, 16, 16);
 
-    tama_menu.add_child(&back, 0, 0, 1, 1, &back_callback);
-    tama_menu.add_child(&feed, 0, 1, 1, 1, &feed_callback);
-    tama_menu.add_child(&check, 0, 1, 1, 1, &check_callback);
-    tama_menu.add_child(&inject, 0, 1, 1, 1, &inject_callback);
-    Serial.println("Trying macros");
-    //~ tama_menu.add_cursor_redirection(0, 1, 1, 1, 2, 0);
-    //~ tama_menu.add_cursor_movement_cancel(1, 1, 1, 1);
-
+    tama_menu.add_child(&widget_back, 0, 0, 1, 1, &back_callback);
+    tama_menu.add_child(&widget_feed, 1, 0, 1, 1, &feed_callback);
+    tama_menu.add_child(&widget_check, 2, 0, 1, 1, &check_callback);
+    tama_menu.add_child(&widget_inject, 2, 1, 1, 1, &inject_callback);
+    Serial.println("CursorMenu Macros");
+    tama_menu.add_movement_cancel(1, 1, 1, 1);
+    tama_menu.add_instant_callback(1, 2, 1, 1, &test);
+    Serial.println("Macros verified");
     world.add_child(&tama_menu);
+    Serial.println("here ?");
+    current_menu = &tama_menu;
     world.display();
     screen.display();
 
@@ -115,29 +130,31 @@ void setup() {
         1
     );
 
-
     Serial.println("Setup complete");
 }
 
 void loop(){
     if (b_up.is_just_pressed()){
-
+        Serial.println("up");
+        current_menu->move_cursor_by(0, -1);
     }
-
     if (b_down.is_just_pressed()){
-
+        Serial.println("down");
+        current_menu->move_cursor_by(0, 1);
     }
     if (b_left.is_just_pressed()){
-
+        Serial.println("left");
+        current_menu->move_cursor_by(-1, 0);
     }
     if (b_right.is_just_pressed()){
+        Serial.println("right");
+        current_menu->move_cursor_by(1, 0);
 
     }
-
     if (b_select.is_just_pressed()){
-
+        Serial.println("select");
+        current_menu->activate();
     }
-
 }
 
 void Task_update(void * pvParameters){
@@ -145,13 +162,15 @@ void Task_update(void * pvParameters){
         for (;;){
         if (millis() > (seconds_counted*1000)){
             seconds_counted++;
-            Serial.println(seconds_counted);
+            //~ Serial.println(seconds_counted);
             for (int i = 0 ; i < TAMA_BOXES_AMOUNT ; i++){
                 for (int a = 0 ; a < TAMA_PER_BOX ; a++){
                     tama_advance_second(&tama_boxes[i].tamas[a]);
                 }
             }
-            Serial.println("Done updating tamas");
+            //~ Serial.println("Done updating tamas");
         }
+        screen.display();
+
     }
 }
