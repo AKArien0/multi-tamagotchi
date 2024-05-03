@@ -128,7 +128,9 @@ namespace PTK{
 	    void Container::change_pos(int new_pos_x, int new_pos_y){
 		Widget::change_pos(new_pos_x, new_pos_y);
 		for (int i = 0 ; i < children.size() ; i++){
-		    children[i]->change_pos(children[i]->get_pos_x()+pos_x, children[i]->get_pos_y()+pos_y);
+		    if (children[i] != NULL){
+			children[i]->change_pos(children[i]->get_pos_x()+pos_x, children[i]->get_pos_y()+pos_y);
+		    }
 		}
 	    }
 
@@ -153,22 +155,23 @@ namespace PTK{
 	    }
 
 	    void Container::add_child(Widget* new_child){
+		children.push_back(new_child);
 		if (new_child != NULL){
 		    new_child->change_pos(new_child->get_pos_x()+pos_x, new_child->get_pos_y()+pos_y);
 		}
-		children.push_back(new_child);
 	    }
 
 	    void Container::add_children(std::vector<Widget*>* new_children){
-		children.insert(children.end(), new_children->begin(), new_children->end());
-		for (int i = 0 ; i < children.size() ; i++){
-		    children[i]->change_pos(children[i]->get_pos_x()+pos_x, children[i]->get_pos_y()+pos_y);
+		for (int i = 0 ; i < new_children->size() ; i++){
+		    add_child(new_children->at(i));
 		}
 	    }
 
 	Container::~Container(){
 	    for (int i = 0 ; i < children.size() ; i++){
-		delete children[i];
+		if (children[i] != NULL){
+		    delete children[i];
+		}
 	    }
 	}
 
@@ -187,6 +190,7 @@ namespace PTK{
 		}
 
 		void CursorMenu::add_child(Widget* new_child, int rel_pos_x, int rel_pos_y, int dim_x, int dim_y, void (*callback)()){
+		    //~ Container::add_child(new_child);
 		    children.push_back(new_child);
 		    children_pos_x.push_back(rel_pos_x);
 		    children_pos_y.push_back(rel_pos_y);
@@ -197,14 +201,14 @@ namespace PTK{
 
 		int CursorMenu::get_index_from_coords(int x, int y){
 		    for (int i = 0 ; i < children.size() ; i++){
-			if (x >= children_pos_x[i] && x <= children_pos_x[i]+children_dim_x[i]){
-			    if (y >= children_pos_y[i] && y <= children_pos_y[i]+children_dim_y[i]){
-				return i;
-			    }
+			//~ if (((x >= children_pos_x[i]) && (x <= children_pos_x[i]+children_dim_x[i])) && ((y >= children_pos_y[i]) && (y <= children_pos_y[i]+children_dim_y[i]))){
+			if (((x >= children_pos_x[i] && x < children_pos_x[i] + children_dim_x[i]) && (y >= children_pos_y[i] && y < children_pos_y[i] + children_dim_y[i]))){ //corrected by codegemma. idfk
+			    return i;
 			}
 		    }
 		    return -1;
 		}
+
 
 		int CursorMenu::move_cursor_by(int add_x, int add_y){
 		    return move_cursor_to(get_cursor_x()+add_x, get_cursor_y()+add_y);
@@ -212,14 +216,15 @@ namespace PTK{
 
 		int CursorMenu::move_cursor_to(int new_pos_x, int new_pos_y){
 		    int index = get_index_from_coords(new_pos_x, new_pos_y);
-		    if (index > -1){
-			if (children[index] == NULL){
-			    if (children_callbacks[index] == NULL){
-				return 2;
-			    }
-			    children_callbacks[index]();
-			    return 1;
+		    if (index == -1){
+			return 3;
+		    }
+		    if (children[index] == NULL){
+			if (children_callbacks[index] == NULL){
+			    return 2;
 			}
+			children_callbacks[index]();
+			//~ return 1;
 		    }
 
 		    if (new_pos_x < 0){
@@ -241,6 +246,14 @@ namespace PTK{
 
 		    cursor_move_callback();
 		    return 0;
+		}
+
+		void CursorMenu::add_movement_cancel(int x, int y, int xx, int yy){
+		    add_child(NULL, x, y, xx, yy, NULL);
+		}
+
+		void CursorMenu::add_instant_callback(int x, int y, int xx, int yy, void(*callback)()){
+		    add_child(NULL, x, y, xx, yy, callback);
 		}
 
 		int CursorMenu::get_cursor_x(){

@@ -86,7 +86,6 @@ namespace PTK{
 					int cursor_origin_y;
 					int cursor_step_x;
 					int cursor_step_y;
-
 					std::vector<int> children_pos_x;
 					std::vector<int> children_pos_y;
 					std::vector<int> children_dim_x;
@@ -94,11 +93,14 @@ namespace PTK{
 					std::vector<void(*)()> children_callbacks;
 
 				public:
+
 					CursorMenu(int set_pos_x, int set_pos_y, int bound_x, int bound_y, Widget* set_cursor_widget, int set_cursor_origin_x, int set_cursor_origin_y, int set_cursor_step_x, int set_cursor_step_y);
 					void set_cursor_move_callback(void(*set_callback)());
 					void add_child(Widget* new_child, int rel_pos_x, int rel_pos_y, int dim_x, int dim_y, void (*callback)());
-					#define add_movement_cancel(x, y, xx, yy) add_child(NULL, x, y, xx, yy, NULL)
-					#define add_instant_callback(x, y, xx, yy, callback) add_child(NULL, x, y, xx, yy, callback);
+					void add_movement_cancel(int x, int y, int xx, int yy);
+					void add_instant_callback(int x, int y, int xx, int yy, void (*callback)());
+					//~ #define add_movement_cancel(x, y, xx, yy) add_child(NULL, x, y, xx, yy, NULL)
+					//~ #define add_instant_callback(x, y, xx, yy, callback) add_child(NULL, x, y, xx, yy, callback);
 					int get_index_from_coords(int x, int y);
 					int move_cursor_by(int add_x, int add_y);
 					int move_cursor_to(int new_pos_x, int new_pos_y);

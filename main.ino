@@ -49,9 +49,9 @@ PTK::CursorMenu* current_menu;
 box tama_boxes[TAMA_BOXES_AMOUNT];
 
 void cursor_mov_callback(){
-    Serial.print("Index : ");
-    Serial.println(current_menu->get_index_from_coords(current_menu->get_cursor_x(), current_menu->get_cursor_y()));
-    Serial.println(current_menu->get_cursor_widget()->get_pos_x());
+    //~ Serial.print("Index : ");
+    //~ Serial.println(current_menu->get_index_from_coords(current_menu->get_cursor_x(), current_menu->get_cursor_y()));
+    //~ Serial.println(current_menu->get_cursor_widget()->get_pos_x());
 }
 
 void test(){
@@ -59,17 +59,21 @@ void test(){
 }
 
 void back_callback(){
+    Serial.println("back_callback");
 }
 
 void feed_callback(){
+    Serial.println("feed_callback");
 
 }
 
 void check_callback(){
+    Serial.println("check_callback");
 
 }
 
 void inject_callback(){
+    Serial.println("inject_callback");
 
 }
 
@@ -105,15 +109,13 @@ void setup() {
     static PTK::Image widget_inject(40, 20, image_icon_inject, 16, 16);
 
     tama_menu.add_child(&widget_back, 0, 0, 1, 1, &back_callback);
+    tama_menu.add_instant_callback(0, 1, 1, 1, &test);
     tama_menu.add_child(&widget_feed, 1, 0, 1, 1, &feed_callback);
+    tama_menu.add_movement_cancel(1, 1, 1, 1);
     tama_menu.add_child(&widget_check, 2, 0, 1, 1, &check_callback);
     tama_menu.add_child(&widget_inject, 2, 1, 1, 1, &inject_callback);
-    Serial.println("CursorMenu Macros");
-    tama_menu.add_movement_cancel(1, 1, 1, 1);
-    tama_menu.add_instant_callback(1, 2, 1, 1, &test);
-    Serial.println("Macros verified");
+    delay(500);
     world.add_child(&tama_menu);
-    Serial.println("here ?");
     current_menu = &tama_menu;
     world.display();
     screen.display();
@@ -136,19 +138,19 @@ void setup() {
 void loop(){
     if (b_up.is_just_pressed()){
         Serial.println("up");
-        current_menu->move_cursor_by(0, -1);
+        Serial.println(current_menu->move_cursor_by(0, -1));
     }
     if (b_down.is_just_pressed()){
         Serial.println("down");
-        current_menu->move_cursor_by(0, 1);
+        Serial.println(current_menu->move_cursor_by(0, 1));
     }
     if (b_left.is_just_pressed()){
         Serial.println("left");
-        current_menu->move_cursor_by(-1, 0);
+        Serial.println(current_menu->move_cursor_by(-1, 0));
     }
     if (b_right.is_just_pressed()){
         Serial.println("right");
-        current_menu->move_cursor_by(1, 0);
+        Serial.println(current_menu->move_cursor_by(1, 0));
 
     }
     if (b_select.is_just_pressed()){
