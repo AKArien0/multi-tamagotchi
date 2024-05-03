@@ -129,7 +129,7 @@ void setup() {
         NULL,
         1,
         &Task_update_handle,
-        1
+        0
     );
 
     Serial.println("Setup complete");
@@ -164,15 +164,14 @@ void Task_update(void * pvParameters){
         for (;;){
         if (millis() > (seconds_counted*1000)){
             seconds_counted++;
-            //~ Serial.println(seconds_counted);
+            Serial.println(seconds_counted);
             for (int i = 0 ; i < TAMA_BOXES_AMOUNT ; i++){
                 for (int a = 0 ; a < TAMA_PER_BOX ; a++){
                     tama_advance_second(&tama_boxes[i].tamas[a]);
                 }
             }
-            //~ Serial.println("Done updating tamas");
+            Serial.println("Done updating tamas");
         }
         screen.display();
-
     }
 }
