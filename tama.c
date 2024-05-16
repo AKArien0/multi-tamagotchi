@@ -1,6 +1,6 @@
 #include "tama.h"
 #include "tama_text.h"
-
+;
 char *random_text_in(char *liste[]){
 	srand(time(NULL));
 	return liste[rand()%sizeof(*liste)/sizeof(*liste[0])];
@@ -15,22 +15,11 @@ tama init_tama(){
 	t.pers_type = rand()%NB_PERSONALITIES + ((rand()%NB_PERSONALITIES)*10);
 	t.sleep = MAX_SLEEP - (rand()%MAX_SLEEP/4);
 	t.disease_type = 0;
-	t.disease_time_elapsed = 0;
+	t.disease_time_left = -1;
 	t.drugs = 0;
 	t.drugs_time = 0;
 	t.age = rand()%1800; //jusqu'à 30min de décalage
 	t.form = 0;
-	for (int i = 0 ; i < 8 ; i++){
-		t.past_food[i] = t.food;
-		t.past_love[i] = t.love;
-		t.past_sleep[i] = t.sleep;
-		if (i%2){
-			t.past_disease[i/2][0] = 0;
-		}
-		else{
-			t.past_disease[i/2][1] = 0;
-		}
-	}
 	t.fragility = 0;
 	return t;
 }
@@ -42,14 +31,24 @@ box init_box(){
   b.food_ready = 0;
   for (int i = 0 ; i < TAMA_PER_BOX ; i++){
     b.tamas[i] = init_tama();
+    b.tamas[i].parent = &b;
   }
   return b;
 }
 
 void tama_advance_second(tama *t){
-	srand(time(NULL));
-	if (!t->sleeping){
+
+	if (t->fragility > FRAGILITY_DEATH_BORDER){
+		t->disease_type = DISEASE_DEAD;
+		t->next_check_override = random_text_in(text_dead);
+		return;
+	}
+
+	//general
+
+	if (t->parent->light){
 		t->food--;
+		t->sleep--;
 	}
 	else{
 		if (!t->age %4){
@@ -58,25 +57,74 @@ void tama_advance_second(tama *t){
 		t->sleep++;
 	}
 
-	t->sleep--;
-	t->disease_time_elapsed++;
+	if (t->sleep <= 0){
+		t->fragility++;
+	}
+
+	t->disease_time_left--;
 	t->drugs_time--;
 	t->age++;
 
-	if (!t->age%43200){
-		for (int i = 1 ; i < 8 ; i++){
-			t->past_food[i-1] = t->past_food[i];
-			t->past_love[i-1] = t->past_love[i];
-			t->past_sleep[i-1] = t->past_sleep[i];
-		}
-		t->past_food[8] = t->food;
-		t->past_love[8] = t->love;
-		t->past_sleep[8] = t->sleep;
+	// special / events
+
+	srand(time(NULL));
+
+	switch (t->disease_type){
+
+		case DISEASE_DEAD:
+
+			return;
+
+		case DISEASE_NORMAL:
+
+			// fall sick
+				// contagion
+			if (!rand()%604800-(t->fragility)){ // best case scenario, 7 days
+				t->disease_type = rand()%DISEASE_COUNT+1;
+				t->disease_time_left = rand()%259200; //up to 3 days
+				t->next_check_override = "Il est tombé malade...";
+			break;
+			}
+
+		case DISEASE_1:
+
+			if (!rand()%3600){
+				t->parent->dirty++;
+			}
 	}
-	t->fragility--;
+
+	// fights
+	if (!rand()%43200+(t->mood*1000)){ // 12 hours to 15 days
+		t->fragility += rand()%(int)(FRAGILITY_DEATH_BORDER*0.5);
+		t->next_check_override = "Ces blessures... il s'est battu.";
+	}
+
+	//check for mistreating
+
+	int reduce_fragility_flag = 1;
+
+	if (t->food <= 0){
+		t->fragility++;
+		reduce_fragility_flag = 0;
+	}
+
+	if (t->sleep <= 0){
+		t->fragility++;
+		reduce_fragility_flag = 0;
+	}
+
+	if (reduce_fragility_flag){
+		t->fragility--;
+	}
+
 }
 
 char *feed(tama *t, int value){
+
+	if (t->disease_type == DISEASE_DEAD){
+		return CANCEL_BECAUSE_DEAD;
+	}
+
 	t->love += value * MAX_LOVE / MAX_FOOD / 5;
 
 	if (t->love > MAX_LOVE/2){
@@ -123,7 +171,7 @@ char *feed(tama *t, int value){
 }
 
 char *inject(tama *t, int inj_id, int time){
-	if (t->drugs > 300){
+	if (t->drugs_time > 300){
 		return random_text_in(text_inject[INJECT_STOP]);
 	}
 	if (t->love < MAX_LOVE/1.7){
@@ -141,37 +189,69 @@ char *inject(tama *t, int inj_id, int time){
 		t->mood -= MAX_MOOD/10;
 		return random_text_in(text_inject[INJECT_BRAVE]);
 	}
+
 	t->mood -= MAX_MOOD/7;
 	t->love -= MAX_LOVE/10;
 	return random_text_in(text_inject[INJECT_NORMAL_REACTION]);
 }
 
-
-int past_value_score(tama *t, int c_value){
-
-	return 0;
-}
-
-char *clean(tama *t){
-
-}
-
 char *check(tama *t){
+
+	if (t->disease_type == DISEASE_DEAD){
+		return CANCEL_BECAUSE_DEAD;
+	}
+
+	if (t->next_check_override == ""){
+		char* value = t->next_check_override;
+		t->next_check_override = "";
+		return value;
+	}
+
+	if (t->disease_type == DISEASE_DEAD){
+		return random_text_in(text_dead);
+	}
+
 	srand(time(NULL));
 	if (rand()%2){
-    return text_check_warnings[0][0];
+	    // hard checks
 	}
-	return text_check_warnings[0][1];
+	// ai
 }
 
-//~ int main(){
-	//~ box tama_boxes[TAMA_BOXES_AMOUNT];
-    //~ for (int i = 0 ; i < TAMA_BOXES_AMOUNT ; i++){
-        //~ tama_boxes[i] = init_box();
-    //~ }
-    //~ for (int i = 0 ; i < TAMA_BOXES_AMOUNT ; i++){
-		//~ for (int a = 0 ; a < TAMA_PER_BOX ; a++){
-			//~ tama_advance_second(&tama_boxes[i].tamas[a]);
-		//~ }
-	//~ }
-//~ }
+char *fun(tama *t){
+
+	if (t->disease_type == DISEASE_DEAD){
+		return CANCEL_BECAUSE_DEAD;
+	}
+
+	srand(time(NULL));
+	int refusal_score = (t->love*0.75)+(t->mood*0.25);
+	if (refusal_score < MAX_LOVE+MAX_MOOD/4){
+		if (!rand()%(refusal_score%100)){
+			return random_text_in(text_fun_refusal);
+		}
+	}
+
+	t->mood += MAX_MOOD/10;
+	t->love += MAX_LOVE/40;
+	return random_text_in(text_fun);
+}
+
+char *clean(box *b){
+	if (b->dirty <= 0){
+		return "C'est propre.";
+	}
+	b->dirty--;
+	return "C'est déjà mieux comme ça.";
+}
+
+char *switch_light(box *b){
+	if (b->light){
+		b->light = 0;
+		return "Au lit !";
+	}
+	else{
+		b->light = 1;
+		return "Debout !";
+	}
+}

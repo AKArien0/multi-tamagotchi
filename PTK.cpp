@@ -1,3 +1,8 @@
+/*
+SPDX-FileCopyrightText : 2024 AKArien <skeptikal.monke@gmail.com>
+SPDX-License-Identifier : GPL-3.0-or-later
+*/
+
 #include "PTK.hpp"
 
 namespace PTK{

@@ -135,3 +135,36 @@ char * text_check_warnings[7][3] = // value, value %
 		"check past_sleep 2"
 	}
 };
+
+char * text_fun_refusal[] =
+{
+	"Il rechigne.",
+	"Vous lui faites peur",
+	"Il hésite",
+};
+
+char * text_fun[] =
+{
+	"Vous le peignez affectueusement.",
+	"Vous le décoiffez affectueusement.",
+	"Il sautille entre vos mains.",
+	"Il court tout autour de vous."	,
+	"Il regarde quelque-chose au loin.",
+	"Il rêvasse",
+    "Vous le bercez",
+    "Vous le câlinez.",
+    "Il vous regarde intensément.",
+    "Il se laisse aller et tourne en rond.",
+    "Il faufile entre vos jambes.",
+    "Il vous fait une petite grimace.",
+    "Il se dresse sur ses pattes arrières.",
+    "Il vous donnera un petit coup de langue.",
+    "Il s'accroche à votre épaule."
+};
+
+char * text_dead[] =
+{
+	"Il est mort",
+	"Le corps est froid",
+	"Il faut nettoyer ça"
+}

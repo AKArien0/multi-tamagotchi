@@ -1,3 +1,8 @@
+/*
+SPDX-FileCopyrightText : 2024 AKArien <skeptikal.monke@gmail.com>
+SPDX-License-Identifier : GPL-3.0-or-later
+*/
+
 #include <vector>
 #include <string>
 #include <iostream>
@@ -99,8 +104,6 @@ namespace PTK{
 					void add_child(Widget* new_child, int rel_pos_x, int rel_pos_y, int dim_x, int dim_y, void (*callback)());
 					void add_movement_cancel(int x, int y, int xx, int yy);
 					void add_instant_callback(int x, int y, int xx, int yy, void (*callback)());
-					//~ #define add_movement_cancel(x, y, xx, yy) add_child(NULL, x, y, xx, yy, NULL)
-					//~ #define add_instant_callback(x, y, xx, yy, callback) add_child(NULL, x, y, xx, yy, callback);
 					int get_index_from_coords(int x, int y);
 					int move_cursor_by(int add_x, int add_y);
 					int move_cursor_to(int new_pos_x, int new_pos_y);

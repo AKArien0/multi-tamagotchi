@@ -100,23 +100,23 @@ void setup() {
         tama_boxes[i] = init_box();
     }
 
-    static PTK::Image cursor(0, 0, image_cursor, 16, 16);
-    static PTK::CursorMenu tama_menu(8, 24, 2, 1, &cursor, 7, 7, 20, 20);
-    tama_menu.set_cursor_move_callback(&cursor_mov_callback);
-    static PTK::Image widget_back(0, 0, image_icon_back, 16, 16);
-    static PTK::Image widget_feed(20, 0, image_icon_feed, 16, 16);
-    static PTK::Image widget_check(40, 0, image_icon_check, 16, 16);
-    static PTK::Image widget_inject(40, 20, image_icon_inject, 16, 16);
+    PTK::Image* cursor = new PTK::Image(0, 0, image_cursor, 16, 16);
+    PTK::CursorMenu* tama_menu = new PTK::CursorMenu(8, 24, 2, 1, cursor, 7, 7, 20, 20);
+    tama_menu->set_cursor_move_callback(&cursor_mov_callback);
+    PTK::Image* widget_back = new PTK::Image(0, 0, image_icon_back, 16, 16);
+    PTK::Image* widget_feed = new PTK::Image(20, 0, image_icon_feed, 16, 16);
+    PTK::Image* widget_check = new PTK::Image(40, 0, image_icon_check, 16, 16);
+    PTK::Image* widget_inject = new PTK::Image(40, 20, image_icon_inject, 16, 16);
 
-    tama_menu.add_child(&widget_back, 0, 0, 1, 1, &back_callback);
-    tama_menu.add_instant_callback(0, 1, 1, 1, &test);
-    tama_menu.add_child(&widget_feed, 1, 0, 1, 1, &feed_callback);
-    tama_menu.add_movement_cancel(1, 1, 1, 1);
-    tama_menu.add_child(&widget_check, 2, 0, 1, 1, &check_callback);
-    tama_menu.add_child(&widget_inject, 2, 1, 1, 1, &inject_callback);
+    tama_menu->add_child(widget_back, 0, 0, 1, 1, &back_callback);
+    tama_menu->add_instant_callback(0, 1, 1, 1, &test);
+    tama_menu->add_child(widget_feed, 1, 0, 1, 1, &feed_callback);
+    tama_menu->add_movement_cancel(1, 1, 1, 1);
+    tama_menu->add_child(widget_check, 2, 0, 1, 1, &check_callback);
+    tama_menu->add_child(widget_inject, 2, 1, 1, 1, &inject_callback);
     delay(500);
-    world.add_child(&tama_menu);
-    current_menu = &tama_menu;
+    world.add_child(tama_menu);
+    current_menu = tama_menu;
     world.display();
     screen.display();
 
