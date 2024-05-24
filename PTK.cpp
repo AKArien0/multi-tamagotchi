@@ -89,7 +89,7 @@ namespace PTK{
 		    hide();
 		    current_frame++;
 		    if (current_frame > anim_len){
-			    current_frame = 0;
+			current_frame = 0;
 		    }
 		    display();
 		}
@@ -97,8 +97,8 @@ namespace PTK{
 	    Animation::~Animation(){
 	    }
 
-	TextBox::TextBox(int set_pos_x, int set_pos_y, std::string set_string, int span_x, int span_y) : Widget(set_pos_x, set_pos_y){
-	    text = set_string;
+	TextBox::TextBox(int set_pos_x, int set_pos_y, int span_x, int span_y) : Widget(set_pos_x, set_pos_y){
+	    text = "";
 	    xx = span_x;
 	    yy = span_y;
 	}

@@ -94,9 +94,9 @@ char * text_inject[4][3] =
 char * text_check_warnings[7][3] = // value, value %
 {
 	{
-		"warning food 0",
-		"warning food 1",
-		"warning food 2"
+		"Il vraiment faim",
+		"Il a un peu faim",
+		"En pleine digestion !"
 	},
 
 	{
@@ -168,3 +168,13 @@ char * text_dead[] =
 	"Le corps est froid",
 	"Il faut nettoyer ça"
 }
+
+#define CANCEL_BECAUSE_DEAD text_dead[0]
+#define CLEAN_ALREADY "C'est propre."
+#define CLEAN_BETTER "C'est déjà mieux comme ça."
+#define LIGHT_OFF "Au lit !"
+#define LIGHT_ON "Debout !"
+
+#define OVERRIDE_SICK "Il est tombé malade..."
+#define OVERRIDE_FOUGHT "Ces blessures... il s'est battu."
+#define OVERRIDE_NEXT_STAGE "Il a grandi !"

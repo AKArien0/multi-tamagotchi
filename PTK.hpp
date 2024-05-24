@@ -57,7 +57,7 @@ namespace PTK{
 				int xx, yy;
 
 			public:
-				TextBox(int set_pos_x, int set_pos_y, std::string set_string, int span_x, int span_y);
+				TextBox(int set_pos_x, int set_pos_y, int span_x, int span_y);
 				void display();
 				void hide();
 
@@ -98,7 +98,6 @@ namespace PTK{
 					std::vector<void(*)()> children_callbacks;
 
 				public:
-
 					CursorMenu(int set_pos_x, int set_pos_y, int bound_x, int bound_y, Widget* set_cursor_widget, int set_cursor_origin_x, int set_cursor_origin_y, int set_cursor_step_x, int set_cursor_step_y);
 					void set_cursor_move_callback(void(*set_callback)());
 					void add_child(Widget* new_child, int rel_pos_x, int rel_pos_y, int dim_x, int dim_y, void (*callback)());

@@ -16,6 +16,8 @@
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin
 Adafruit_SSD1306 screen(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
+#define HERE Serial.println("here");
+
 namespace PTK{
     void Image::display(){
         screen.drawBitmap(
@@ -32,6 +34,13 @@ namespace PTK{
             xx, yy,
             BLACK);
     }
+
+    void TextBox::display(){
+        //~ screen.setTextColor(WHITE);
+        //~ screen.setCursor(0, 0);
+        //~ screen.println(text);
+    }
+
 };
 
 TaskHandle_t Task_update_handle;
@@ -46,7 +55,11 @@ PTK::Container world(0, 0);
 
 PTK::CursorMenu* current_menu;
 
+PTK::TextBox* text_view;
+
 box tama_boxes[TAMA_BOXES_AMOUNT];
+
+void* current_element;
 
 void cursor_mov_callback(){
     //~ Serial.print("Index : ");
@@ -60,21 +73,31 @@ void test(){
 
 void back_callback(){
     Serial.println("back_callback");
+    text_view->set_text("");
 }
 
-void feed_callback(){
+void feed_indv_callback(){
     Serial.println("feed_callback");
-
+    text_view->set_text(feed((tama*)current_element, MAX_FOOD/8));
 }
 
-void check_callback(){
+void check_indv_callback(){
     Serial.println("check_callback");
-
+    text_view->set_text(check((tama*)current_element));
 }
 
-void inject_callback(){
+void inject_indv_callback(){
     Serial.println("inject_callback");
 
+}
+
+void fun_indv_callback(){
+    text_view->set_text(fun((tama*)current_element));
+}
+
+void switch_light_callback(){
+    text_view->set_text(switch_light(((tama*)current_element)->parent));
+    ((PTK::Animation*)(current_menu->get_item_at_cursor()))->next_frame();
 }
 
 void setup() {
@@ -102,25 +125,25 @@ void setup() {
 
     PTK::Image* cursor = new PTK::Image(0, 0, image_cursor, 16, 16);
     PTK::CursorMenu* tama_menu = new PTK::CursorMenu(8, 24, 2, 1, cursor, 7, 7, 20, 20);
+    current_menu = tama_menu;
     tama_menu->set_cursor_move_callback(&cursor_mov_callback);
     PTK::Image* widget_back = new PTK::Image(0, 0, image_icon_back, 16, 16);
     PTK::Image* widget_feed = new PTK::Image(20, 0, image_icon_feed, 16, 16);
     PTK::Image* widget_check = new PTK::Image(40, 0, image_icon_check, 16, 16);
     PTK::Image* widget_inject = new PTK::Image(40, 20, image_icon_inject, 16, 16);
+    PTK::Animation* widget_light = new PTK::Animation(0, 20, animation_icon_light, 16, 16);
+
+    text_view = new PTK::TextBox(0, 0, 128, 64);
 
     tama_menu->add_child(widget_back, 0, 0, 1, 1, &back_callback);
-    tama_menu->add_instant_callback(0, 1, 1, 1, &test);
-    tama_menu->add_child(widget_feed, 1, 0, 1, 1, &feed_callback);
-    tama_menu->add_movement_cancel(1, 1, 1, 1);
-    tama_menu->add_child(widget_check, 2, 0, 1, 1, &check_callback);
-    tama_menu->add_child(widget_inject, 2, 1, 1, 1, &inject_callback);
-    delay(500);
+    tama_menu->add_child(widget_feed, 1, 0, 1, 1, &feed_indv_callback);
+    tama_menu->add_child(widget_check, 2, 0, 1, 1, &check_indv_callback);
+    tama_menu->add_child(widget_inject, 2, 1, 1, 1, &inject_indv_callback);
+    tama_menu->add_child(widget_light, 0, 1, 1, 1, &switch_light_callback);
     world.add_child(tama_menu);
-    current_menu = tama_menu;
+    world.add_child(text_view);
     world.display();
     screen.display();
-
-    delay(2000);
 
     xTaskCreatePinnedToCore(
         Task_update,
@@ -151,7 +174,6 @@ void loop(){
     if (b_right.is_just_pressed()){
         Serial.println("right");
         Serial.println(current_menu->move_cursor_by(1, 0));
-
     }
     if (b_select.is_just_pressed()){
         Serial.println("select");
@@ -166,9 +188,7 @@ void Task_update(void * pvParameters){
             seconds_counted++;
             Serial.println(seconds_counted);
             for (int i = 0 ; i < TAMA_BOXES_AMOUNT ; i++){
-                for (int a = 0 ; a < TAMA_PER_BOX ; a++){
-                    tama_advance_second(&tama_boxes[i].tamas[a]);
-                }
+                box_advance_second(&tama_boxes[i]);
             }
             Serial.println("Done updating tamas");
         }

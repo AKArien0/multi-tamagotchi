@@ -15,7 +15,7 @@ tama init_tama(){
 	t.pers_type = rand()%NB_PERSONALITIES + ((rand()%NB_PERSONALITIES)*10);
 	t.sleep = MAX_SLEEP - (rand()%MAX_SLEEP/4);
 	t.disease_type = 0;
-	t.disease_time_left = -1;
+	t.disease_time_left = 0;
 	t.drugs = 0;
 	t.drugs_time = 0;
 	t.age = rand()%1800; //jusqu'à 30min de décalage
@@ -78,12 +78,14 @@ void tama_advance_second(tama *t){
 		case DISEASE_NORMAL:
 
 			// fall sick
-				// contagion
-			if (!rand()%604800-(t->fragility)){ // best case scenario, 7 days
-				t->disease_type = rand()%DISEASE_COUNT+1;
-				t->disease_time_left = rand()%259200; //up to 3 days
-				t->next_check_override = "Il est tombé malade...";
-			break;
+			// contagion reroll
+			for (int i = 0 ; i < t->parent->dirty ; i++){ // unsanitary reroll
+				if (!rand()%604800-(t->fragility)){ // best case scenario, 7 days
+					t->disease_type = rand()%DISEASE_COUNT+1;
+					t->disease_time_left = rand()%259200; //up to 3 days
+					t->next_check_override = OVERRIDE_SICK;
+				break;
+				}
 			}
 
 		case DISEASE_1:
@@ -93,10 +95,14 @@ void tama_advance_second(tama *t){
 			}
 	}
 
+	if (!rand()%86400){
+		t->parent->dirty++;
+	}
+
 	// fights
 	if (!rand()%43200+(t->mood*1000)){ // 12 hours to 15 days
 		t->fragility += rand()%(int)(FRAGILITY_DEATH_BORDER*0.5);
-		t->next_check_override = "Ces blessures... il s'est battu.";
+		t->next_check_override = OVERRIDE_FOUGHT;
 	}
 
 	//check for mistreating
@@ -117,6 +123,50 @@ void tama_advance_second(tama *t){
 		t->fragility--;
 	}
 
+	// state adjusments
+
+	if (t->disease_time_left <= 0){ // return to non sick
+		t->disease_type = DISEASE_NORMAL;
+		t->disease_time_left = 0;
+	}
+
+	if (!t->age%(2*24*60*60)){ // update form
+		t->next_check_override = OVERRIDE_NEXT_STAGE;
+		switch (t->form){
+			case 0: // egg
+				t->form++;
+				break;
+
+			case 1: // baby
+				t->form += 1 + rand()%2;
+
+			case 2: // child type 1
+				t->form += 1 + rand()%3;
+
+			case 3: //child type 2
+				t->form += 4 + rand()%3;
+		}
+
+	}
+
+}
+
+void box_advance_second(box *b){
+	for (int i = 0 ; i < TAMA_PER_BOX ; i++){
+		tama_advance_second(&(b->tamas[i]));
+		if (b->food_ready > 0){ // nested ifs. oops. cannot use feed() function, feeding has to be impersonnal
+			if (b->tamas[i].food < MAX_FOOD*0.66){
+				if (b->food_ready > MAX_FOOD*0.3){
+					b->food_ready -= MAX_FOOD*0.3;
+					b->tamas[i].food += MAX_FOOD*0.3;
+				}
+				else{
+					b->tamas[i].food += b->food_ready;
+					b->food_ready = 0;
+				}
+			}
+		}
+	}
 }
 
 char *feed(tama *t, int value){
@@ -212,7 +262,7 @@ char *check(tama *t){
 	}
 
 	srand(time(NULL));
-	if (rand()%2){
+	if (!rand()%2){
 	    // hard checks
 	}
 	// ai
@@ -238,20 +288,21 @@ char *fun(tama *t){
 }
 
 char *clean(box *b){
+	b->dirty -= 3;
 	if (b->dirty <= 0){
-		return "C'est propre.";
+		return CLEAN_ALREADY;
+		b->dirty = 0;
 	}
-	b->dirty--;
-	return "C'est déjà mieux comme ça.";
+	return CLEAN_BETTER;
 }
 
 char *switch_light(box *b){
 	if (b->light){
 		b->light = 0;
-		return "Au lit !";
+		return LIGHT_OFF;
 	}
 	else{
 		b->light = 1;
-		return "Debout !";
+		return LIGHT_ON;
 	}
 }

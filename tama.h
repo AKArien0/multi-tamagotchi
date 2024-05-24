@@ -24,8 +24,6 @@ extern "C" {
 
 #define NB_PERSONALITIES 4
 
-#define CANCEL_BECAUSE_DEAD "Il est mort"
-
 typedef struct box_struct box;
 
 typedef struct tama_struct{
@@ -50,7 +48,13 @@ box init_box();
 
 void tama_advance_second(tama *t);
 
+void box_advance_second(box *b);
+
+char *leave_food(box *b, int value);
+
 char *feed(tama *t, int value);
+
+char *distribute_meds(box *b, int inj_id, int time);
 
 char *inject(tama *t, int inj_id, int time);
 
