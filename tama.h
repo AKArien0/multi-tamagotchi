@@ -58,11 +58,17 @@ char *distribute_meds(box *b, int inj_id, int time);
 
 char *inject(tama *t, int inj_id, int time);
 
+
+
 char *fun(tama *t);
+
+char *check_box(box *b);
 
 char *check(tama *t);
 
 char *clean(box *b);
+
+char *comb(tama *t);
 
 char *switch_light(box *b);
 

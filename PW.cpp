@@ -3,9 +3,9 @@ SPDX-FileCopyrightText : 2024 AKArien <skeptikal.monke@gmail.com>
 SPDX-License-Identifier : GPL-3.0-or-later
 */
 
-#include "PTK.hpp"
+#include "PW.hpp"
 
-namespace PTK{
+namespace PW{
 
     Widget::Widget(){
 	pos_x = 0;
@@ -30,7 +30,7 @@ namespace PTK{
 	display();
     }
 
-    void Widget::reposition(int add_pos_x, int add_pos_y){
+    void Widget::add_pos(int add_pos_x, int add_pos_y){
 	change_pos(pos_x+add_pos_x, pos_y+add_pos_y);
     }
 
@@ -45,27 +45,11 @@ namespace PTK{
     Widget::~Widget(){
     }
 
-	Image::Image(int set_pos_x, int set_pos_y, const unsigned char * set_image, int dim_x, int dim_y) : Widget(set_pos_x, set_pos_y){
+	Image::Image(int set_pos_x, int set_pos_y, void* set_image, int dim_x, int dim_y) : Widget(set_pos_x, set_pos_y){
 	    image = set_image;
 	    xx = dim_x;
 	    yy = dim_y;
 	}
-
-	    //~ void Image::display(){
-		    //~ screen.drawBitmap(
-			    //~ pos_x, pos_y,
-			    //~ image,
-			    //~ xx, yy,
-			    //~ WHITE);
-	    //~ }
-
-	    //~ void Image::hide(){
-		    //~ screen.drawBitmap(
-			    //~ pos_x, pos_y,
-			    //~ image,
-			    //~ xx, yy,
-			    //~ BLACK);
-	    //~ }
 
 	    void Image::change_pos(int new_pos_x, int new_pos_y){
 		hide();
@@ -74,12 +58,11 @@ namespace PTK{
 		display();
 	    }
 
-
 	Image::~Image(){
 	    hide();
 	}
 
-	    Animation::Animation(int set_pos_x, int set_pos_y, const unsigned char ** set_anim, int dim_x, int dim_y) : Image(set_pos_x, set_pos_y, set_anim[0], dim_x, dim_y){
+	    Animation::Animation(int set_pos_x, int set_pos_y, void** set_anim, int dim_x, int dim_y) : Image(set_pos_x, set_pos_y, set_anim[0], dim_x, dim_y){
 		anim = set_anim;
 		current_frame = 0;
 		anim_len = sizeof(set_anim)/sizeof(set_anim[0]);
@@ -91,6 +74,7 @@ namespace PTK{
 		    if (current_frame > anim_len){
 			current_frame = 0;
 		    }
+		    image = anim[current_frame];
 		    display();
 		}
 
@@ -102,15 +86,6 @@ namespace PTK{
 	    xx = span_x;
 	    yy = span_y;
 	}
-
-		//~ void TextBox::display(){
-
-		//~ }
-
-	    void TextBox::hide(){
-		set_text("");
-		display();
-	    }
 
 	    void TextBox::set_text(std::string new_text){
 		text = new_text;
@@ -180,14 +155,17 @@ namespace PTK{
 	    }
 	}
 
-	    CursorMenu::CursorMenu(int set_pos_x, int set_pos_y, int bound_x, int bound_y, Widget* set_cursor_widget, int set_cursor_origin_x, int set_cursor_origin_y, int set_cursor_step_x, int set_cursor_step_y) : Container(set_pos_x, set_pos_y){
+	    CursorMenu::CursorMenu(int set_pos_x, int set_pos_y, int bound_x, int bound_y, Widget* set_cursor_widget,
+		    int set_cursor_origin_x, int set_cursor_origin_y, int set_cursor_step_x, int set_cursor_step_y,
+		    bool init_instant_callback_is_valid_position) : Container(set_pos_x, set_pos_y){
 		bounds[0] = bound_x;
 		bounds[1] = bound_y;
 		cursor_move_callback = NULL;
 		cursor_step_x = set_cursor_step_x;
 		cursor_step_y = set_cursor_step_y;
 		cursor_widget = set_cursor_widget;
-		cursor_widget->reposition(pos_x, pos_y);
+		cursor_widget->add_pos(pos_x, pos_y);
+		instant_callback_is_valid_position = init_instant_callback_is_valid_position;
 	    }
 
 		void CursorMenu::set_cursor_move_callback(void(*set_callback)()){
@@ -229,7 +207,9 @@ namespace PTK{
 			    return 2;
 			}
 			children_callbacks[index]();
-			//~ return 1;
+			if (!instant_callback_is_valid_position){
+			    return 1;
+			}
 		    }
 
 		    if (new_pos_x < 0){
@@ -259,6 +239,10 @@ namespace PTK{
 
 		void CursorMenu::add_instant_callback(int x, int y, int xx, int yy, void(*callback)()){
 		    add_child(NULL, x, y, xx, yy, callback);
+		}
+
+		void CursorMenu::set_instant_callback_is_valid_position(bool set){
+		    instant_callback_is_valid_position = set;
 		}
 
 		int CursorMenu::get_cursor_x(){

@@ -1,7 +1,7 @@
 #include "tama.h"
 #include "images.h"
 #include "Input.hpp"
-#include "PTK.hpp"
+#include "PW.hpp"
 
 #include <SPI.h>
 #include <Wire.h>
@@ -18,11 +18,12 @@ Adafruit_SSD1306 screen(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 #define HERE Serial.println("here");
 
-namespace PTK{
+
+namespace PW{
     void Image::display(){
         screen.drawBitmap(
             pos_x, pos_y,
-            image,
+            (unsigned char *)image,
             xx, yy,
             WHITE);
     }
@@ -30,7 +31,7 @@ namespace PTK{
     void Image::hide(){
         screen.drawBitmap(
             pos_x, pos_y,
-            image,
+            (unsigned char *)image,
             xx, yy,
             BLACK);
     }
@@ -39,6 +40,10 @@ namespace PTK{
         //~ screen.setTextColor(WHITE);
         //~ screen.setCursor(0, 0);
         //~ screen.println(text);
+    }
+
+    void TextBox::hide(){
+
     }
 
 };
@@ -51,11 +56,11 @@ Input::Button b_left(17);
 Input::Button b_right(16);
 Input::Button b_select(4);
 
-PTK::Container world(0, 0);
+PW::Container world(0, 0);
 
-PTK::CursorMenu* current_menu;
+PW::CursorMenu* current_menu;
 
-PTK::TextBox* text_view;
+PW::TextBox* text_view;
 
 box tama_boxes[TAMA_BOXES_AMOUNT];
 
@@ -71,33 +76,63 @@ void test(){
     Serial.println("test");
 }
 
-void back_callback(){
-    Serial.println("back_callback");
-    text_view->set_text("");
+namespace tama_callbacks{
+
+    void feed(){
+        Serial.println("feed_callback");
+        text_view->set_text(feed((tama*)current_element, MAX_FOOD/8));
+    }
+
+    void check(){
+        Serial.println("check_callback");
+        text_view->set_text(check((tama*)current_element));
+    }
+
+    void inject(){
+        Serial.println("inject_callback");
+    }
+
+    void fun(){
+        text_view->set_text(fun((tama*)current_element));
+    }
+
+    void clean(){
+
+    }
+
+    void back(){
+        //~ text_view->set_text("Barn");
+        //~ delete current_menu;
+        //~ current_menu = create_box_menu((tama*)current_element->parent);
+    }
 }
 
-void feed_indv_callback(){
-    Serial.println("feed_callback");
-    text_view->set_text(feed((tama*)current_element, MAX_FOOD/8));
-}
 
-void check_indv_callback(){
-    Serial.println("check_callback");
-    text_view->set_text(check((tama*)current_element));
-}
-
-void inject_indv_callback(){
-    Serial.println("inject_callback");
-
-}
-
-void fun_indv_callback(){
-    text_view->set_text(fun((tama*)current_element));
-}
 
 void switch_light_callback(){
     text_view->set_text(switch_light(((tama*)current_element)->parent));
-    ((PTK::Animation*)(current_menu->get_item_at_cursor()))->next_frame();
+    ((PW::Animation*)(current_menu->get_item_at_cursor()))->next_frame();
+}
+
+
+PW::CursorMenu* create_tama_menu(tama* t){
+
+    PW::Image* cursor = new PW::Image(0, 0, (void*)image_cursor, 16, 16);
+    PW::CursorMenu* tama_menu = new PW::CursorMenu(8, 24, 2, 1, cursor, 7, 7, 20, 20, false);
+    tama_menu->set_cursor_move_callback(&cursor_mov_callback);
+    PW::Image* widget_back = new PW::Image(0, 0, (void*)image_icon_back, 16, 16);
+    PW::Image* widget_feed = new PW::Image(20, 0, (void*)image_icon_feed, 16, 16);
+    PW::Image* widget_check = new PW::Image(40, 0, (void*)image_icon_check, 16, 16);
+    PW::Image* widget_inject = new PW::Image(40, 20, (void*)image_icon_inject, 16, 16);
+    PW::Image* widget_rake = new PW::Image(0, 20, (void*)image_icon_rake, 16, 16);
+
+    tama_menu->add_child(widget_back, 0, 0, 1, 1, &tama_callbacks::back);
+    tama_menu->add_child(widget_feed, 1, 0, 1, 1, &tama_callbacks::feed);
+    tama_menu->add_child(widget_check, 2, 0, 1, 1, &tama_callbacks::check);
+    tama_menu->add_child(widget_inject, 2, 1, 1, 1, &tama_callbacks::inject);
+    tama_menu->add_child(widget_rake, 0, 1, 1, 1, &tama_callbacks::clean);
+
+    return tama_menu;
 }
 
 void setup() {
@@ -113,6 +148,8 @@ void setup() {
     screen.clearDisplay();
     screen.display();
 
+    text_view = new PW::TextBox(0, 0, 128, 64);
+
     b_up.begin(INPUT_PULLUP, 0);
     b_down.begin(INPUT_PULLUP, 0);
     b_left.begin(INPUT_PULLUP, 0);
@@ -123,24 +160,9 @@ void setup() {
         tama_boxes[i] = init_box();
     }
 
-    PTK::Image* cursor = new PTK::Image(0, 0, image_cursor, 16, 16);
-    PTK::CursorMenu* tama_menu = new PTK::CursorMenu(8, 24, 2, 1, cursor, 7, 7, 20, 20);
-    current_menu = tama_menu;
-    tama_menu->set_cursor_move_callback(&cursor_mov_callback);
-    PTK::Image* widget_back = new PTK::Image(0, 0, image_icon_back, 16, 16);
-    PTK::Image* widget_feed = new PTK::Image(20, 0, image_icon_feed, 16, 16);
-    PTK::Image* widget_check = new PTK::Image(40, 0, image_icon_check, 16, 16);
-    PTK::Image* widget_inject = new PTK::Image(40, 20, image_icon_inject, 16, 16);
-    PTK::Animation* widget_light = new PTK::Animation(0, 20, animation_icon_light, 16, 16);
+    current_menu = create_tama_menu(&(tama_boxes[0].tamas[0]));
 
-    text_view = new PTK::TextBox(0, 0, 128, 64);
-
-    tama_menu->add_child(widget_back, 0, 0, 1, 1, &back_callback);
-    tama_menu->add_child(widget_feed, 1, 0, 1, 1, &feed_indv_callback);
-    tama_menu->add_child(widget_check, 2, 0, 1, 1, &check_indv_callback);
-    tama_menu->add_child(widget_inject, 2, 1, 1, 1, &inject_indv_callback);
-    tama_menu->add_child(widget_light, 0, 1, 1, 1, &switch_light_callback);
-    world.add_child(tama_menu);
+    world.add_child(current_menu);
     world.add_child(text_view);
     world.display();
     screen.display();

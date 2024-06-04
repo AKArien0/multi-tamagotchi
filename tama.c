@@ -148,7 +148,6 @@ void tama_advance_second(tama *t){
 		}
 
 	}
-
 }
 
 void box_advance_second(box *b){
@@ -305,4 +304,12 @@ char *switch_light(box *b){
 		b->light = 1;
 		return LIGHT_ON;
 	}
+}
+
+char *distribute_meds(box *b, int inj_id, int time){
+
+}
+
+char *check_box(box *b){
+
 }
