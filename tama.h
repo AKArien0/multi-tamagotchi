@@ -46,31 +46,31 @@ tama init_tama();
 
 box init_box();
 
-void tama_advance_second(tama *t);
 
 void box_advance_second(box *b);
 
 char *leave_food(box *b, int value);
 
-char *feed(tama *t, int value);
+char *check_box(box *b);
 
 char *distribute_meds(box *b, int inj_id, int time);
 
-char *inject(tama *t, int inj_id, int time);
+char *switch_light(box *b);
+
+char *clean_box(box *b);
 
 
+void tama_advance_second(tama *t);
 
-char *fun(tama *t);
-
-char *check_box(box *b);
+char *feed(tama *t, int value);
 
 char *check(tama *t);
 
-char *clean(box *b);
+char *inject(tama *t, int inj_id, int time);
 
-char *comb(tama *t);
+char *switch_light_from_tama(tama *t);
 
-char *switch_light(box *b);
+char *clean_tama(tama *t);
 
 #ifdef __cplusplus
 }

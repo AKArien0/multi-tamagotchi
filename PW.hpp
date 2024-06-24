@@ -6,6 +6,7 @@ SPDX-License-Identifier : GPL-3.0-or-later
 #include <vector>
 #include <string>
 #include <iostream>
+#include <functional>
 
 namespace PW{
 
@@ -95,15 +96,15 @@ namespace PW{
 					std::vector<int> children_pos_y;
 					std::vector<int> children_dim_x;
 					std::vector<int> children_dim_y;
-					std::vector<void(*)()> children_callbacks;
+					std::vector<std::function<void()>> children_callbacks;
 					bool instant_callback_is_valid_position;
 
 				public:
-					CursorMenu(int set_pos_x, int set_pos_y, int bound_x, int bound_y, Widget* set_cursor_widget, int set_cursor_origin_x, int set_cursor_origin_y, int set_cursor_step_x, int set_cursor_step_y, bool init_instant_callback_is_valid_position);
+					CursorMenu(int set_pos_x, int set_pos_y, int bound_x, int bound_y, Widget* set_cursor_widget, int set_cursor_step_x, int set_cursor_step_y, bool init_instant_callback_is_valid_position);
 					void set_cursor_move_callback(void(*set_callback)());
-					void add_child(Widget* new_child, int rel_pos_x, int rel_pos_y, int dim_x, int dim_y, void (*callback)());
+					void add_child(Widget* new_child, int rel_pos_x, int rel_pos_y, int dim_x, int dim_y, std::function<void()> callback);
 					void add_movement_cancel(int x, int y, int xx, int yy);
-					void add_instant_callback(int x, int y, int xx, int yy, void (*callback)());
+					void add_instant_callback(int x, int y, int xx, int yy, std::function<void()> callback);
 					void set_instant_callback_is_valid_position(bool set);
 					int get_index_from_coords(int x, int y);
 					int move_cursor_by(int add_x, int add_y);

@@ -156,7 +156,7 @@ namespace PW{
 	}
 
 	    CursorMenu::CursorMenu(int set_pos_x, int set_pos_y, int bound_x, int bound_y, Widget* set_cursor_widget,
-		    int set_cursor_origin_x, int set_cursor_origin_y, int set_cursor_step_x, int set_cursor_step_y,
+		    int set_cursor_step_x, int set_cursor_step_y,
 		    bool init_instant_callback_is_valid_position) : Container(set_pos_x, set_pos_y){
 		bounds[0] = bound_x;
 		bounds[1] = bound_y;
@@ -172,7 +172,7 @@ namespace PW{
 		    cursor_move_callback = set_callback;
 		}
 
-		void CursorMenu::add_child(Widget* new_child, int rel_pos_x, int rel_pos_y, int dim_x, int dim_y, void (*callback)()){
+		void CursorMenu::add_child(Widget* new_child, int rel_pos_x, int rel_pos_y, int dim_x, int dim_y, std::function<void()> callback){
 		    //~ Container::add_child(new_child);
 		    children.push_back(new_child);
 		    children_pos_x.push_back(rel_pos_x);
@@ -237,7 +237,7 @@ namespace PW{
 		    add_child(NULL, x, y, xx, yy, NULL);
 		}
 
-		void CursorMenu::add_instant_callback(int x, int y, int xx, int yy, void(*callback)()){
+		void CursorMenu::add_instant_callback(int x, int y, int xx, int yy, std::function<void()> callback){
 		    add_child(NULL, x, y, xx, yy, callback);
 		}
 

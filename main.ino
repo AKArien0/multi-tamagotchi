@@ -18,7 +18,6 @@ Adafruit_SSD1306 screen(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 #define HERE Serial.println("here");
 
-
 namespace PW{
     void Image::display(){
         screen.drawBitmap(
@@ -107,19 +106,72 @@ namespace tama_callbacks{
     }
 }
 
-
-
 void switch_light_callback(){
     text_view->set_text(switch_light(((tama*)current_element)->parent));
     ((PW::Animation*)(current_menu->get_item_at_cursor()))->next_frame();
 }
 
+PW::CursorMenu* create_box_menu(box* b){
+
+    PW::Image* cursor = new PW::Image(0, 0, (void*)image_cursor, 16, 16);
+    PW::CursorMenu* box_menu = new PW::CursorMenu(8, 24, 3, 1, cursor, 20, 20, false);
+    box_menu->set_cursor_move_callback(&cursor_mov_callback);
+
+    PW::Image* little_cursor = new PW::Image(0, 0, (void*)image_little_cursor, 12, 12);
+    PW::CursorMenu* tama_selector = new PW::CursorMenu(60, 0, 5, 4, little_cursor, 12, 12, false);
+    tama_selector->set_cursor_move_callback(&cursor_mov_callback);
+
+    auto switch_to_tama_selector = [&]() {
+        tama_selector->move_cursor_to(1, 0);
+        current_menu = tama_selector;
+        cursor->hide();
+        little_cursor->display();
+    };
+
+    auto switch_to_box_menu = [&]() {
+        current_menu = tama_selector;
+        little_cursor->hide();
+        cursor->display();
+    };
+
+    box_menu->add_instant_callback(3, 0, 1, 2, switch_to_tama_selector);
+    tama_selector->add_instant_callback(0, 0, 4, 1, switch_to_box_menu);
+
+    box_menu->add_child(new PW::Image(0, 0, (void*)image_icon_back, 16, 16), 0, 0, 1, 1, &box_callbacks::back);
+    box_menu->add_child(new PW::Image(20, 0, (void*)image_icon_feed, 16, 16), 1, 0, 1, 1, &box_callbacks::feed);
+    box_menu->add_child(new PW::Image(40, 0, (void*)image_icon_check, 16, 16), 2, 0, 1, 1 &box_callbacks::check);
+    box_menu->add_child(new PW::Animation(0, 20, (void*)animation_icon_light, 16, 16), 0, 1, 1, 1, &box_callbacks::light);
+    box_menu->add_child(new PW::Image(20, 20, (void*)image_icon_rake, 16, 16), 1, 1, 1, 1, &box_callbacks::clean);
+    box_menu->add_child(new PW::Image(40, 20, (void*)image_icon_inject, 16, 16), 2, 1, 1, 1, &box_callbacks::inject);
+
+    for (int i = 0 ; i < 16 ; i++){
+        char** animation_to_place;
+        switch (b->tamas[i]->form){
+            case 1:
+                animation_to_place = animation_tama_1_1_mini;
+                break;
+
+            case 2:
+                animation_to_place = animation_tama_2_1_mini;
+                break;
+
+            case 3:
+                animation_to_place = animation_tama_2_2_mini;
+        }
+
+        tama_selector->add_child(new PW::Animation(0, 0, (void**)animation_to_place, 12, 12), i%4, i/4, 1, 1, /*However the fuck we switch to tama menu, god i love lambas*/)
+    }
+
+}
 
 PW::CursorMenu* create_tama_menu(tama* t){
 
     PW::Image* cursor = new PW::Image(0, 0, (void*)image_cursor, 16, 16);
-    PW::CursorMenu* tama_menu = new PW::CursorMenu(8, 24, 2, 1, cursor, 7, 7, 20, 20, false);
+    PW::CursorMenu* tama_menu = new PW::CursorMenu(8, 24, 2, 1, cursor, 20, 20, false);
     tama_menu->set_cursor_move_callback(&cursor_mov_callback);
+
+    PW::Animation* tama_animation = new PW::Animation(60, 0, (void**)animation_tama_1_1_idle, 48, 48);
+
     PW::Image* widget_back = new PW::Image(0, 0, (void*)image_icon_back, 16, 16);
     PW::Image* widget_feed = new PW::Image(20, 0, (void*)image_icon_feed, 16, 16);
     PW::Image* widget_check = new PW::Image(40, 0, (void*)image_icon_check, 16, 16);
@@ -214,6 +266,7 @@ void Task_update(void * pvParameters){
             }
             Serial.println("Done updating tamas");
         }
+
         screen.display();
     }
 }
