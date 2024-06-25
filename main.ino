@@ -77,6 +77,10 @@ void test(){
 
 namespace tama_callbacks{
 
+    void back(){
+
+    }
+
     void feed(){
         Serial.println("feed_callback");
         text_view->set_text(feed((tama*)current_element, MAX_FOOD/8));
@@ -87,28 +91,46 @@ namespace tama_callbacks{
         text_view->set_text(check((tama*)current_element));
     }
 
-    void inject(){
-        Serial.println("inject_callback");
-    }
+    void light(){
 
-    void fun(){
-        text_view->set_text(fun((tama*)current_element));
     }
 
     void clean(){
 
     }
 
-    void back(){
-        //~ text_view->set_text("Barn");
-        //~ delete current_menu;
-        //~ current_menu = create_box_menu((tama*)current_element->parent);
+    void inject(){
+
     }
+
 }
 
-void switch_light_callback(){
-    text_view->set_text(switch_light(((tama*)current_element)->parent));
-    ((PW::Animation*)(current_menu->get_item_at_cursor()))->next_frame();
+namespace box_callbacks{
+
+    void back(){
+
+    }
+
+    void feed(){
+
+    }
+
+    void check(){
+
+    }
+
+    void light(){
+
+    }
+
+    void clean(){
+
+    }
+
+    void inject(){
+
+    }
+
 }
 
 PW::CursorMenu* create_box_menu(box* b){
@@ -139,29 +161,29 @@ PW::CursorMenu* create_box_menu(box* b){
 
     box_menu->add_child(new PW::Image(0, 0, (void*)image_icon_back, 16, 16), 0, 0, 1, 1, &box_callbacks::back);
     box_menu->add_child(new PW::Image(20, 0, (void*)image_icon_feed, 16, 16), 1, 0, 1, 1, &box_callbacks::feed);
-    box_menu->add_child(new PW::Image(40, 0, (void*)image_icon_check, 16, 16), 2, 0, 1, 1 &box_callbacks::check);
-    box_menu->add_child(new PW::Animation(0, 20, (void*)animation_icon_light, 16, 16), 0, 1, 1, 1, &box_callbacks::light);
+    box_menu->add_child(new PW::Image(40, 0, (void*)image_icon_check, 16, 16), 2, 0, 1, 1, &box_callbacks::check);
+    box_menu->add_child(new PW::Animation(0, 20, (void**)animation_icon_light, 16, 16), 0, 1, 1, 1, &box_callbacks::light);
     box_menu->add_child(new PW::Image(20, 20, (void*)image_icon_rake, 16, 16), 1, 1, 1, 1, &box_callbacks::clean);
     box_menu->add_child(new PW::Image(40, 20, (void*)image_icon_inject, 16, 16), 2, 1, 1, 1, &box_callbacks::inject);
 
     for (int i = 0 ; i < 16 ; i++){
-        char** animation_to_place;
-        switch (b->tamas[i]->form){
+        void** animation_to_place;
+        switch (b->tamas[i].form){
             case 1:
-                animation_to_place = animation_tama_1_1_mini;
+                animation_to_place = (void**)animation_tama_1_1_mini;
                 break;
 
             case 2:
-                animation_to_place = animation_tama_2_1_mini;
+                animation_to_place = (void**)animation_tama_2_1_mini;
                 break;
 
             case 3:
-                animation_to_place = animation_tama_2_2_mini;
+                animation_to_place = (void**)animation_tama_2_2_mini;
         }
 
-        tama_selector->add_child(new PW::Animation(0, 0, (void**)animation_to_place, 12, 12), i%4, i/4, 1, 1, /*However the fuck we switch to tama menu, god i love lambas*/)
+        tama_selector->add_child(new PW::Animation(0, 0, animation_to_place, 12, 12), i%4, i/4, 1, 1, &switch_to_tama_menu);
     }
-
+    return box_menu;
 }
 
 PW::CursorMenu* create_tama_menu(tama* t){
@@ -185,6 +207,22 @@ PW::CursorMenu* create_tama_menu(tama* t){
     tama_menu->add_child(widget_rake, 0, 1, 1, 1, &tama_callbacks::clean);
 
     return tama_menu;
+}
+
+void switch_light_callback(){
+    text_view->set_text(switch_light(((tama*)current_element)->parent));
+    ((PW::Animation*)(current_menu->get_item_at_cursor()))->next_frame();
+}
+
+void switch_to_menu(PW::CursorMenu* menu){
+    delete current_menu;
+    current_menu = menu;
+}
+
+void switch_to_tama_menu(){
+    tama target = ((box*)current_element)->tamas[(current_menu->get_cursor_x()*4)+current_menu->get_cursor_y()];
+    delete current_menu;
+    current_menu = create_tama_menu(&target);
 }
 
 void setup() {
