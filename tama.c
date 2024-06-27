@@ -1,13 +1,12 @@
 #include "tama.h"
 #include "tama_text.h"
 ;
+
 char *random_text_in(char *liste[]){
-	srand(time(NULL));
 	return liste[rand()%sizeof(*liste)/sizeof(*liste[0])];
 }
 
 void init_tama(tama* target){
-	srand(time(NULL));
 	target->food = MAX_FOOD/4 + (rand()%MAX_FOOD/8);
 	target->love = MAX_LOVE/4 + (rand()%MAX_LOVE/2);
 	target->mood = MAX_MOOD/4 + (rand()%MAX_MOOD/2);
@@ -47,33 +46,51 @@ void tama_advance_second(tama *t){
 	//general
 
 	if (t->parent->light){
-		t->food--;
-		t->sleep--;
+		if (t->food == 0){
+			t->fragility++;
+		}
+		else{
+			t->food--;
+		}
+
+		if (t->sleep == 0){
+			t->fragility++;
+		}
+		else{
+			t->sleep--;
+		}
 	}
 	else{
 		if (!t->age %4){
-			t->food--;
+			if (t->food == 0){
+				t->fragility++;
+			}
+			else{
+				t->food--;
+			}
+
+			if (t->sleep == 0){
+				t->fragility++;
+			}
+			else{
+				t->sleep--;
+			}
 		}
-		t->sleep++;
 	}
 
-	if (t->sleep <= 0){
-		t->fragility++;
+	if (t->drugs_time != 0){
+		t->drugs_time--;
+	}
+	else{
+		t->drugs = 0;
 	}
 
-	t->disease_time_left--;
-	t->drugs_time--;
 	t->age++;
 
 	// special / events
 
-	srand(time(NULL));
 
 	switch (t->disease_type){
-
-		case DISEASE_DEAD:
-
-			return;
 
 		case DISEASE_NORMAL:
 
@@ -100,7 +117,7 @@ void tama_advance_second(tama *t){
 	}
 
 	// fights
-	if (!rand()%43200+(t->mood*1000)){ // 12 hours to 15 days
+	if (!rand()%(43200+(t->mood*1000))){ // 12 hours to 15 days
 		t->fragility += rand()%(int)(FRAGILITY_DEATH_BORDER*0.5);
 		t->next_check_override = OVERRIDE_FOUGHT;
 	}
@@ -120,14 +137,19 @@ void tama_advance_second(tama *t){
 	}
 
 	if (reduce_fragility_flag){
-		t->fragility--;
+		if (t->fragility != 0){
+			t->fragility--;
+		}
 	}
 
 	// state adjusments
 
-	if (t->disease_time_left <= 0){ // return to non sick
+	if (t->disease_time_left == 0){ // return to non sick
 		t->disease_type = DISEASE_NORMAL;
 		t->disease_time_left = 0;
+	}
+	else{
+		t->disease_time_left--;
 	}
 
 	if (!t->age%(2*24*60*60)){ // update form
@@ -260,11 +282,27 @@ char *check(tama *t){
 		return random_text_in(text_dead);
 	}
 
-	srand(time(NULL));
-	if (!rand()%2){
-	    // hard checks
+
+	if (rand()%3){
+		switch (rand()%5){
+			case CHECK_FOOD:
+				return text_check_warnings[CHECK_FOOD][(int)(((float)t->food/(MAX_FOOD+t->food))*CHECK_WARNINGS_TEXT_LEVELS)];
+
+			case CHECK_SLEEP:
+				return text_check_warnings[CHECK_SLEEP][(int)(((float)t->sleep/(MAX_SLEEP+t->sleep))*CHECK_WARNINGS_TEXT_LEVELS)];
+
+			case CHECK_DISEASE:
+				return "this";
+
+			case CHECK_DRUGS:
+				return "that";
+
+			case CHECK_FRAGILITY:
+				return text_check_warnings[CHECK_FRAGILITY][(int)(((float)t->fragility/(FRAGILITY_DEATH_BORDER+t->fragility))*CHECK_WARNINGS_TEXT_LEVELS)];
+		}
+
 	}
-	// ai
+	return random_text_in(text_fun);
 }
 
 char *fun(tama *t){
@@ -273,7 +311,6 @@ char *fun(tama *t){
 		return CANCEL_BECAUSE_DEAD;
 	}
 
-	srand(time(NULL));
 	int refusal_score = (t->love*0.75)+(t->mood*0.25);
 	if (refusal_score < MAX_LOVE+MAX_MOOD/4){
 		if (!rand()%(refusal_score%100)){

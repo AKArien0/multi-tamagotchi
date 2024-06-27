@@ -67,13 +67,13 @@ char * text_inject[4][3] =
 	{
 		"Il grimace mais reste calme.",
 		"Il tient bon pour vous.",
-		"Coming soon"
+		"Il grimace mais reste calme"
 	},
 
 	{
 		"Il se débat trop pour injecter.",
-		"Coming soon",
-		"Coming soon"
+		"Il vous échappe",
+		"Il vous fuit"
 	}
 };
 
@@ -87,53 +87,46 @@ char * text_inject[4][3] =
 #define CHECK_SLEEP 1
 #define CHECK_DISEASE 2
 #define CHECK_DRUGS 3
-#define CHECK_PAST_FOOD 4
-#define CHECK_PAST_LOVE 5
-#define CHECK_PAST_SLEEP 6
+#define CHECK_FRAGILITY 4
 
-char * text_check_warnings[7][3] = // value, value %
+#define CHECK_WARNINGS_TEXT_LEVELS 4
+char * text_check_warnings[5][CHECK_WARNINGS_TEXT_LEVELS] = // value, value %
 {
 	{
-		"Il vraiment faim",
-		"Il a un peu faim",
+		"Il a vraiment faim",
+		"Il cherche à manger",
+		"Il a un petit creux",
 		"En pleine digestion !"
+
 	},
 
 	{
-		"check sleep 0",
-		"check sleep 1",
-		"check sleep 2"
+		"Il a sommeil",
+		"La fatigue du jour commence à se faire sentir",
+		"Il est en forme !",
+		"Il semble avoir de l'énergie pour des jours !"
 	},
 
 	{
 		"check disease 0",
 		"check disease 1",
-		"check disease 2"
+		"check disease 2",
+		"check disease 3"
 	},
 
 	{
 		"check drugs 0",
 		"check drugs 1",
-		"check drugs 2"
+		"check drugs 2",
+		"check drugs 3"
 	},
 
 	{
-		"check past_food 0",
-		"check past_food 1",
-		"check past_food 2"
+		"check fragility 0",
+		"check fragility 1",
+		"check fragility 2",
+		"check fragility 3"
 	},
-
-	{
-		"check past_love 0",
-		"check past_love 1",
-		"check past_love 2"
-	},
-
-	{
-		"check past_sleep 0",
-		"check past_sleep 1",
-		"check past_sleep 2"
-	}
 };
 
 char * text_fun_refusal[] =
@@ -147,7 +140,7 @@ char * text_fun[] =
 {
 	"Vous le peignez affectueusement.",
 	"Vous le décoiffez affectueusement.",
-	"Il sautille entre vos mains.",
+	"Il pétrit le sol de ses pattes.",
 	"Il court tout autour de vous."	,
 	"Il regarde quelque-chose au loin.",
 	"Il rêvasse",
@@ -158,7 +151,7 @@ char * text_fun[] =
     "Il faufile entre vos jambes.",
     "Il vous fait une petite grimace.",
     "Il se dresse sur ses pattes arrières.",
-    "Il vous donnera un petit coup de langue.",
+    "Il vous donne un petit coup de langue.",
     "Il s'accroche à votre épaule."
 };
 

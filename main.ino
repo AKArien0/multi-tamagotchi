@@ -59,6 +59,8 @@ Input::Button b_select(16);
 
 //~ PW::Container world(0, 0);
 
+std::vector<PW::Animation*> to_animate;
+
 PW::CursorMenu* current_menu;
 
 PW::TextBox* text_view;
@@ -207,6 +209,7 @@ PW::CursorMenu* create_box_menu(box* b){
                 break;
         }
         PW::Animation* widget = new PW::Animation(((i%4)*12)+12, (i/4)*12, animation_to_place, 12, 12);
+        to_animate.push_back(widget);
         tama_selector->add_child(widget, (i%4)+1, (i/4), 1, 1, switch_to_tama_menu);
     }
 
@@ -244,12 +247,14 @@ PW::CursorMenu* create_tama_menu(tama* t){
             break;
 
         case 3:
-            animation = (void**)animation_tama_2_2_idle;
         break;
     }
+            animation = (void**)animation_tama_2_2_idle;
 
     PW::Animation* tama_animation = new PW::Animation(68, -8, animation, 48, 48);
     tama_menu->add_child(tama_animation, 4, 0, 1, 1, NULL);
+
+    to_animate.push_back(tama_animation);
 
     tama_menu->add_child(new PW::Image(0, 0, (void*)image_icon_back, 16, 16), 0, 0, 1, 1, tama_callbacks::back);
     tama_menu->add_child(new PW::Image(20, 0, (void*)image_icon_feed, 16, 16), 1, 0, 1, 1, tama_callbacks::feed);
@@ -269,6 +274,8 @@ PW::CursorMenu* create_tama_menu(tama* t){
 }
 
 void switch_to_tama_menu(){
+    to_animate.clear();
+
     if (current_element == NULL){
         Serial.println("Current element is null");
     }
@@ -286,6 +293,7 @@ void switch_to_tama_menu(){
 }
 
 void switch_to_box_menu_from_tama(){
+    to_animate.clear();
     if (current_element == NULL){
         Serial.println("Current element is null");
     }
@@ -304,6 +312,8 @@ void switch_to_box_menu_from_tama(){
 void setup() {
     Serial.begin(9600);
     Serial.println("Alive");
+
+    srand(time(NULL));
 
     // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
     if(!screen.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
@@ -327,7 +337,7 @@ void setup() {
     b_select.begin(INPUT_PULLUP, 0);
 
     for (int i = 0 ; i < TAMA_BOXES_AMOUNT ; i++){
-        init_box(&(boxes[i])));
+        init_box(&(boxes[i]));
         for (int a = 0 ; a < TAMA_PER_BOX ; a++){
             boxes[i].tamas[a].parent = &boxes[i];
         }
@@ -395,6 +405,11 @@ void Task_update(void * pvParameters){
             Serial.println(seconds_counted);
             for (int i = 0 ; i < TAMA_BOXES_AMOUNT ; i++){
                 box_advance_second(&boxes[i]);
+            }
+            for (auto& item : to_animate) {
+                if (item) {
+                    item->next_frame();
+                }
             }
         }
 
