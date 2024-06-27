@@ -15,7 +15,7 @@ char * text_feed[7][2] =
 
 	{
 		"Il a trop mangé, il a l'air pataud...",
-		"Il a l'air de regretter sa gourmandise..."
+		"Il a l'air de regretter d'avoir tant mangé..."
 	},
 
 	{
@@ -34,7 +34,7 @@ char * text_feed[7][2] =
 	},
 
 	{
-		"Il refuse de s'approcher... il n'a pas l'air de vous faire confiance.",
+		"Il refuse de s'approcher....",
 		"Il n'ose pas s'approcher assez près pour manger."
 	},
 
@@ -65,7 +65,7 @@ char * text_inject[4][3] =
 	},
 
 	{
-		"Il grimace mais mais reste calme.",
+		"Il grimace mais reste calme.",
 		"Il tient bon pour vous.",
 		"Coming soon"
 	},
@@ -169,7 +169,8 @@ char * text_dead[] =
 	"Il faut nettoyer ça"
 }
 
-#define CANCEL_BECAUSE_DEAD text_dead[0]
+//~ #define CANCEL_BECAUSE_DEAD text_dead[0]
+#define CANCEL_BECAUSE_DEAD random_text_in(text_dead)
 #define CLEAN_ALREADY "C'est propre."
 #define CLEAN_BETTER "C'est déjà mieux comme ça."
 #define LIGHT_OFF "Au lit !"

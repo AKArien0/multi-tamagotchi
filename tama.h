@@ -5,7 +5,7 @@ extern "C" {
 #include <stdlib.h>
 #include <time.h>
 
-#define TAMA_BOXES_AMOUNT 6
+#define TAMA_BOXES_AMOUNT 3
 #define TAMA_PER_BOX 16
 
 #define MAX_SLEEP 12*60*60
@@ -16,20 +16,22 @@ extern "C" {
 #define FRAGILITY_DEATH_BORDER 30000
 
 #define DISEASE_NORMAL 0
-#define DISEASE_DEAD -1
+#define DISEASE_DEAD 1
 #define DISEASE_COUNT 1
-#define DISEASE_1 1
-#define DISEASE_2 2
-#define DISEASE_3 3
+#define DISEASE_1 2
+#define DISEASE_2 3
+#define DISEASE_3 4
 
 #define NB_PERSONALITIES 4
+
+#define INJECT_MEDS 1
 
 typedef struct box_struct box;
 
 typedef struct tama_struct{
 	unsigned int food, love, mood, pers_type, sleep, disease_type, disease_time_left, drugs, drugs_time, form, fragility;
-	int64_t age;
-	struct box_struct* parent;
+	uint64_t age;
+	box* parent;
 	char* next_check_override;
 } tama;
 
@@ -42,10 +44,9 @@ typedef struct box_struct{
 
 char *random_text_in(char *liste[]);
 
-tama init_tama();
+void init_tama(tama* target);
 
-box init_box();
-
+void init_box(box* target);
 
 void box_advance_second(box *b);
 

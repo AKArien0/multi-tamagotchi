@@ -24,7 +24,7 @@ namespace PW{
 			void add_pos(int add_pos_x, int add_pos_t);
 			int get_pos_x();
 			int get_pos_y();
-			~Widget();
+			virtual ~Widget();
 	};
 
 		class Image : public Widget{
@@ -42,7 +42,7 @@ namespace PW{
 
 			class Animation : public Image{
 				protected:
-					void* * anim;
+					void** anim;
 					int current_frame;
 					int anim_len;
 

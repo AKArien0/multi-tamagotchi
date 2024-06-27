@@ -74,7 +74,7 @@ namespace PW{
 		    if (current_frame > anim_len){
 			current_frame = 0;
 		    }
-		    image = anim[current_frame];
+		    image = (void*)anim[current_frame];
 		    display();
 		}
 
@@ -88,6 +88,7 @@ namespace PW{
 	}
 
 	    void TextBox::set_text(std::string new_text){
+		hide();
 		text = new_text;
 		display();
 	    }
@@ -107,25 +108,27 @@ namespace PW{
 
 	    void Container::change_pos(int new_pos_x, int new_pos_y){
 		Widget::change_pos(new_pos_x, new_pos_y);
-		for (int i = 0 ; i < children.size() ; i++){
-		    if (children[i] != NULL){
-			children[i]->change_pos(children[i]->get_pos_x()+pos_x, children[i]->get_pos_y()+pos_y);
+
+		for (auto& child : children) {
+		    if (child) {
+			child->change_pos(child->get_pos_x()+pos_x, child->get_pos_y()+pos_y);
 		    }
 		}
 	    }
 
 	    void Container::display(){
-		for (int i = 0 ; i < children.size() ; i++){
-		    if (children[i] != NULL){
-			children[i]->display();
+		for (auto& child : children) {
+		    if (child) {
+			child->display();
 		    }
 		}
+		//~ add_pos(0, 0);
 	    }
 
 	    void Container::hide(){
-		for (int i = 0 ; i < children.size() ; i++){
-		    if (children[i] != NULL){
-			children[i]->hide();
+		for (auto& child : children) {
+		    if (child) {
+			child->hide();
 		    }
 		}
 	    }
@@ -148,9 +151,11 @@ namespace PW{
 	    }
 
 	Container::~Container(){
-	    for (int i = 0 ; i < children.size() ; i++){
-		if (children[i] != NULL){
-		    delete children[i];
+	    for (auto& child : children) {
+		if (child) {
+		    child->hide();
+		    delete child;
+		    child = nullptr;
 		}
 	    }
 	}
@@ -175,6 +180,9 @@ namespace PW{
 		void CursorMenu::add_child(Widget* new_child, int rel_pos_x, int rel_pos_y, int dim_x, int dim_y, std::function<void()> callback){
 		    //~ Container::add_child(new_child);
 		    children.push_back(new_child);
+		    //~ if (new_child != NULL){
+			//~ new_child->add_pos(pos_x, pos_y);
+		    //~ }
 		    children_pos_x.push_back(rel_pos_x);
 		    children_pos_y.push_back(rel_pos_y);
 		    children_dim_x.push_back(dim_x);
@@ -207,6 +215,7 @@ namespace PW{
 			    return 2;
 			}
 			children_callbacks[index]();
+			cursor_move_callback();
 			if (!instant_callback_is_valid_position){
 			    return 1;
 			}
@@ -275,33 +284,27 @@ namespace PW{
 		}
 
 		Widget* CursorMenu::get_item_at_cursor(){
-		    get_item_at(cursor[0], cursor[1]);
+		    return get_item_at(cursor[0], cursor[1]);
 		}
 
 		void CursorMenu::activate(){
 		    int index = get_index_from_coords(cursor[0], cursor[1]);
-		    if (index > -1){
+		    if (index == -1){
 			return;
 		    }
-		    if (children_callbacks[index] == NULL){
-			return;
-		    }
+		    //~ if (children_callbacks[index] == NULL){
+			//~ return;
+		    //~ }
 		    children_callbacks[index]();
 		}
 
+
 	    CursorMenu::~CursorMenu(){
-		    // codegemma's proposal :
-		// Clean up allocated memory for children and their callbacks
-		delete cursor;
-		for (auto& child : children) {
-		    delete child;
+		if (cursor_widget) {
+		    cursor_widget->hide();
+		    delete cursor_widget;
+		    cursor_widget = nullptr;
 		}
-		children.clear();
-		delete[] children_pos_x.data();
-		delete[] children_pos_y.data();
-		delete[] children_dim_x.data();
-		delete[] children_dim_y.data();
-		delete[] children_callbacks.data();
 	    }
 
 };

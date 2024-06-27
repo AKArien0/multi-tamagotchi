@@ -6,41 +6,41 @@ char *random_text_in(char *liste[]){
 	return liste[rand()%sizeof(*liste)/sizeof(*liste[0])];
 }
 
-tama init_tama(){
+void init_tama(tama* target){
 	srand(time(NULL));
-	tama t;
-	t.food = MAX_FOOD/4 + (rand()%MAX_FOOD/4);
-	t.love = MAX_LOVE/4 + (rand()%MAX_LOVE/2);
-	t.mood = MAX_MOOD/2 + (rand()%MAX_MOOD/4);
-	t.pers_type = rand()%NB_PERSONALITIES + ((rand()%NB_PERSONALITIES)*10);
-	t.sleep = MAX_SLEEP - (rand()%MAX_SLEEP/4);
-	t.disease_type = 0;
-	t.disease_time_left = 0;
-	t.drugs = 0;
-	t.drugs_time = 0;
-	t.age = rand()%1800; //jusqu'à 30min de décalage
-	t.form = 0;
-	t.fragility = 0;
-	return t;
+	target->food = MAX_FOOD/4 + (rand()%MAX_FOOD/8);
+	target->love = MAX_LOVE/4 + (rand()%MAX_LOVE/2);
+	target->mood = MAX_MOOD/4 + (rand()%MAX_MOOD/2);
+	target->pers_type = rand()%NB_PERSONALITIES + ((rand()%NB_PERSONALITIES)*10);
+	target->sleep = MAX_SLEEP - (rand()%MAX_SLEEP/4);
+	target->disease_type = 0;
+	target->disease_time_left = 0;
+	target->drugs = 0;
+	target->drugs_time = 0;
+	target->age = rand()%1800; //jusqu'à 30min de décalage
+	target->form = 0;
+	target->fragility = 0;
 }
 
-box init_box(){
-  box b;
-  b.light = 0;
-  b.dirty = 0;
-  b.food_ready = 0;
-  for (int i = 0 ; i < TAMA_PER_BOX ; i++){
-    b.tamas[i] = init_tama();
-    b.tamas[i].parent = &b;
-  }
-  return b;
+void init_box(box* target){
+	target->light = 0;
+	target->dirty = 0;
+	target->food_ready = 0;
+	for (int i = 0 ; i < TAMA_PER_BOX ; i++){
+		init_tama(&(target->tamas[i]));
+		//~ b.tamas[i].parent = &b;
+	}
 }
 
 void tama_advance_second(tama *t){
 
+	if (t->disease_type == DISEASE_DEAD){
+		t->next_check_override = random_text_in(text_dead);
+		return;
+	}
+
 	if (t->fragility > FRAGILITY_DEATH_BORDER){
 		t->disease_type = DISEASE_DEAD;
-		t->next_check_override = random_text_in(text_dead);
 		return;
 	}
 
@@ -208,7 +208,7 @@ char *feed(tama *t, int value){
 			t->mood += value * MAX_MOOD / MAX_FOOD / 2;
 			t->food += value;
 			if (t->food > MAX_FOOD){
-				t->fragility += t->food - MAX_FOOD;
+				t->fragility += (t->food - MAX_FOOD)/4;
 				t->food = MAX_FOOD;
 			}
 			return random_text_in(text_feed[FEED_ALMOST_REFUSE]);
@@ -311,5 +311,13 @@ char *distribute_meds(box *b, int inj_id, int time){
 }
 
 char *check_box(box *b){
+
+}
+
+char *switch_light_from_tama(tama *t){
+
+}
+
+char *clean_tama(tama *t){
 
 }
