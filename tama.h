@@ -10,6 +10,7 @@ extern "C" {
 
 #define MAX_SLEEP 12*60*60
 #define MAX_FOOD 5*60*60
+#define MAX_FOOD_IN_BOX 1000000
 #define MAX_LOVE 1000
 #define MAX_MOOD 1000
 

@@ -16,13 +16,13 @@ void init_tama(tama* target){
 	target->disease_time_left = 0;
 	target->drugs = 0;
 	target->drugs_time = 0;
-	target->age = rand()%1800; //jusqu'à 30min de décalage
+	target->age = rand()%1800; //jusqu'a 30min de decalage
 	target->form = 0;
 	target->fragility = 0;
 }
 
 void init_box(box* target){
-	target->light = 0;
+	target->light = 1;
 	target->dirty = 0;
 	target->food_ready = 0;
 	for (int i = 0 ; i < TAMA_PER_BOX ; i++){
@@ -32,6 +32,17 @@ void init_box(box* target){
 }
 
 void tama_advance_second(tama *t){
+	t->age++;
+
+	if ((t->form == 0) && (t->age > 1800)){
+		t->form = 1;
+		t->next_check_override = OVERRIDE_NEXT_STAGE;
+	}
+
+	if ((t->form == 1) && (t->age > 2*24*60*60)){
+		t->form = 2+rand()%2;
+		t->next_check_override = OVERRIDE_NEXT_STAGE;
+	}
 
 	if (t->form == 0){
 		return;
@@ -89,7 +100,6 @@ void tama_advance_second(tama *t){
 		t->drugs = 0;
 	}
 
-	t->age++;
 
 	// special / events
 
@@ -154,16 +164,6 @@ void tama_advance_second(tama *t){
 	}
 	else{
 		t->disease_time_left--;
-	}
-
-	if (t->age > 1800 && t->form == 0){
-		t->form = 1;
-		t->next_check_override = OVERRIDE_NEXT_STAGE;
-	}
-
-	if (t->age > 2*24*60*60 && t->form == 1){
-		t->form = 2+rand()%2;
-		t->next_check_override = OVERRIDE_NEXT_STAGE;
 	}
 
 	//~ if (!t->age%(2*24*60*60)){ // update form
@@ -277,6 +277,7 @@ char *inject(tama *t, int inj_id, int time){
 
 	t->drugs = inj_id;
 	t->drugs_time = time;
+	t->fragility += time/100;
 
 	if (t->love > MAX_LOVE/1.3){
 		t->mood -= MAX_MOOD/10;
@@ -351,8 +352,8 @@ char *check(tama *t){
 	return random_text_in(text_fun);
 }
 
-char *clean(box *b){
-	b->dirty -= 3;
+char *clean_box(box *b){
+	b->dirty -= 1;
 	if (b->dirty <= 0){
 		return CLEAN_ALREADY;
 		b->dirty = 0;
@@ -372,10 +373,46 @@ char *switch_light(box *b){
 }
 
 char *distribute_meds(box *b, int inj_id, int time){
-
+	for (int i = 0 ; i < TAMA_PER_BOX ; i++){
+		inject(&(b->tamas[i]), inj_id, time);
+	}
+	return MEDS_DISTRIBUTED;
 }
 
 char *check_box(box *b){
+	if (rand()%2){
+		return check(&(b->tamas[rand()%TAMA_PER_BOX]));
+	}
+	switch (rand()%2){
+		case 0: // report food ready
+			if (b->food_ready > (MAX_FOOD_IN_BOX-MAX_FOOD_IN_BOX/4)){
+				return "Il y a de quoi nourrir un regiment";
+			}
+			if (b->food_ready > (MAX_FOOD_IN_BOX-MAX_FOOD_IN_BOX/3)){
+				return "Ils ont largement de quoi manger.";
+			}
+			if (b->food_ready > (MAX_FOOD_IN_BOX-MAX_FOOD_IN_BOX/2)){
+				return "Ils ont un petit encas";
+			}
+
+			return "Ils ont mange tout ce qu'ils ont trouve";
+			break;
+
+		case 1:
+			if (b->dirty > 10){
+				return "C'est horrible et dangereux, il faut nettoyer";
+			}
+			if (b->dirty > 6){
+				return "C'est repugnant, il faut nettoyer";
+			}
+			if (b->dirty > 3){
+				return "Il faudra nettoyer l'enclos";
+			}
+			if (b->dirty > 0){
+				return "il faudra songer a nettoyer l'enclos";
+			}
+			return "L'enclos est propre";
+	}
 
 }
 
@@ -389,5 +426,15 @@ char *clean_tama(tama *t){
 		return random_text_in(not_yet_hatched);
 	}
 
+	return "Il sait se tenir propre";
 
+}
+
+char *leave_food(box *b, int value){
+	b->food_ready += value;
+	if (b->food_ready > 1000000){
+		b->food_ready = 1000000;
+		return "Il y a deja largement assez a disposition.";
+	}
+	return "a manger pour tous !";
 }

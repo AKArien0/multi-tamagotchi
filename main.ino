@@ -94,21 +94,34 @@ namespace tama_callbacks{
     void check(){
         Serial.println("check_callback");
         text_view->set_text(check((tama*)current_element));
+        if (((tama*)current_element)->disease_type == DISEASE_DEAD){
+            return;
+        }
         HERE
         Serial.println(((tama*)current_element)->fragility);
-        Serial.println(((tama*)current_element)->disease_type);
+        Serial.println(((tama*)current_element)->form);
+        void** animation;
+        switch (((tama*)current_element)->form){
+            case 0:
+                return;
+
+            case 1:
+                animation = (void**)animation_tama_1_1_event;
+                break;
+
+            case 2:
+                animation = (void**)animation_tama_2_1_event;
+                break;
+
+            case 3:
+                animation =  (void**)animation_tama_2_2_event;
+                break;
+        }
         int remem_x = to_animate[0]->get_pos_x();
         int remem_y = to_animate[0]->get_pos_y();
         to_animate[0]->change_pos(128, 64);
-        PW::Animation answer(76, 16, (void**)animation_tama_2_2_event, 4, 48, 48);
+        PW::Animation answer(76, 16, (void**)animation, 4, 48, 48);
         answer.display();
-        HERE
-        for (int i = 0 ; i < 5 ; i++){
-
-        Serial.println(answer.next_frame());
-        delay(300);
-        }
-        HERE
         while (answer.next_frame() != 0){
             delay(300);
         }
@@ -142,12 +155,12 @@ namespace box_callbacks{
 
     void feed(){
         Serial.println("box feed");
-
+        text_view->set_text(leave_food((box*)current_element, MAX_FOOD));
     }
 
     void check(){
         Serial.println("box check");
-
+        text_view->set_text(check_box((box*)current_element));
     }
 
     void light(){
@@ -159,12 +172,12 @@ namespace box_callbacks{
 
     void clean(){
         Serial.println("box clean");
-
+        text_view->set_text(clean_box((box*)current_element));
     }
 
     void inject(){
         Serial.println("box inject");
-
+        text_view->set_text(distribute_meds((box*)current_element, INJECT_MEDS, 1*24*60*60));
     }
 
 }
@@ -201,6 +214,9 @@ PW::CursorMenu* create_box_menu(box* b){
     box_menu->add_child(new PW::Image(20, 0, (void*)image_icon_feed, 16, 16), 1, 0, 1, 1, box_callbacks::feed);
     box_menu->add_child(new PW::Image(40, 0, (void*)image_icon_check, 16, 16), 2, 0, 1, 1, box_callbacks::check);
     box_menu->add_child(new PW::Animation(0, 20, (void**)animation_icon_light, 2, 16, 16), 0, 1, 1, 1, box_callbacks::light);
+    if (b->light){
+        ((PW::Animation*)(box_menu->get_item_at(0, 1)))->next_frame();
+    }
     box_menu->add_child(new PW::Image(20, 20, (void*)image_icon_rake, 16, 16), 1, 1, 1, 1, box_callbacks::clean);
     box_menu->add_child(new PW::Image(40, 20, (void*)image_icon_inject, 16, 16), 2, 1, 1, 1, box_callbacks::inject);
 
@@ -224,11 +240,14 @@ PW::CursorMenu* create_box_menu(box* b){
                 animation_to_place = (void**)animation_tama_2_2_mini;
                 break;
         }
+        if (b->tamas[i].disease_type == DISEASE_DEAD){
+            animation_to_place = (void**)animation_skull;
+        }
+
         PW::Animation* widget = new PW::Animation(((i%4)*12)+12, (i/4)*12, animation_to_place, 2, 12, 12);
         to_animate.push_back(widget);
         tama_selector->add_child(widget, (i%4)+1, (i/4), 1, 1, switch_to_tama_menu);
     }
-
 
     box_menu->add_child(tama_selector, 4, 0, 1, 1, NULL);
 
@@ -267,6 +286,10 @@ PW::CursorMenu* create_tama_menu(tama* t){
             break;
     }
 
+    if (t->disease_type == DISEASE_DEAD){
+        animation = (void**)animation_trash_bag;
+    }
+
     PW::Animation* tama_animation = new PW::Animation(68, -8, animation, 2, 48, 48);
     tama_menu->add_child(tama_animation, 4, 0, 1, 1, NULL);
 
@@ -276,7 +299,10 @@ PW::CursorMenu* create_tama_menu(tama* t){
     tama_menu->add_child(new PW::Image(20, 0, (void*)image_icon_feed, 16, 16), 1, 0, 1, 1, tama_callbacks::feed);
     tama_menu->add_child(new PW::Image(40, 0, (void*)image_icon_check, 16, 16), 2, 0, 1, 1, tama_callbacks::check);
     tama_menu->add_child(new PW::Animation(0, 20, (void**)animation_icon_light, 2, 16, 16), 0, 1, 1, 1, tama_callbacks::light);
-    tama_menu->add_child(new PW::Image(20, 20, (void*)image_icon_rake, 16, 16), 1, 1, 1, 1, tama_callbacks::clean);
+    if (t->parent->light){
+        ((PW::Animation*)(tama_menu->get_item_at(0, 1)))->next_frame();
+    }
+    tama_menu->add_child(new PW::Image(20, 20, (void*)image_icon_comb, 16, 16), 1, 1, 1, 1, tama_callbacks::clean);
     tama_menu->add_child(new PW::Image(40, 20, (void*)image_icon_inject, 16, 16), 2, 1, 1, 1, tama_callbacks::inject);
 
     tama_menu->move_cursor_to(0, 0);
@@ -291,6 +317,7 @@ PW::CursorMenu* create_tama_menu(tama* t){
 
 void switch_to_tama_menu(){
     to_animate.clear();
+    screen.clearDisplay();
 
     if (current_element == NULL){
         Serial.println("Current element is null");
@@ -310,6 +337,7 @@ void switch_to_tama_menu(){
 
 void switch_to_box_menu_from_tama(){
     to_animate.clear();
+    screen.clearDisplay();
     if (current_element == NULL){
         Serial.println("Current element is null");
     }
@@ -421,7 +449,11 @@ void Task_update(void * pvParameters){
             Serial.println(seconds_counted);
             for (int i = 0 ; i < TAMA_BOXES_AMOUNT ; i++){
                 box_advance_second(&boxes[i]);
+                //~ for (int a = 0 ; a < TAMA_PER_BOX ; a++){
+                    //~ if (boxes[i].tamas[a].form )
+                //~ }
             }
+
             for (auto& item : to_animate) {
                 if (item) {
                     item->next_frame();

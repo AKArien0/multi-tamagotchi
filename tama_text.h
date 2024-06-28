@@ -14,32 +14,32 @@ char * text_feed[7][2] =
 	},
 
 	{
-		"Il a trop mangé, il a l'air pataud...",
-		"Il a l'air de regretter d'avoir tant mangé..."
+		"Il a trop mange, il a l'air pataud...",
+		"Il a l'air de regretter d'avoir tant mange..."
 	},
 
 	{
-		"Il est encore affamé.",
+		"Il est encore affame.",
 		"Il a encore besoin de beaucoup manger."
 	},
 
 	{
 		"Il remangerait encore bien quelque chose.",
-		"Coming soon"
+		"Il a toujours un petit creux"
 	},
 
 	{
 		"Il a encore faim.",
-		"Coming soon"
+		"Il a toujours un petit creux"
 	},
 
 	{
-		"Il refuse de s'approcher....",
-		"Il n'ose pas s'approcher assez près pour manger."
+		"Il refuse de s'approcher...",
+		"Il n'ose pas s'approcher assez pres."
 	},
 
 	{
-		"Il s'approche avec méfiance, mais mange quand même.",
+		"Il s'approche avec mefiance, mais mange quand même.",
 		"Il mange en vous surveillant du coin de l'œuil."
 	}
 
@@ -54,13 +54,13 @@ char * text_inject[4][3] =
 {
 	{
 		"Ce n'est pas raisonnable.",
-		"Il vaut mieux éviter.",
+		"Il vaut mieux eviter.",
 		"Ce serait dangereux."
 	},
 
 	{
-		"Il gémit de douleur.",
-		"Il ne réagit pas.",
+		"Il gemit de douleur.",
+		"Il ne reagit pas.",
 		"Coming soon"
 	},
 
@@ -71,8 +71,8 @@ char * text_inject[4][3] =
 	},
 
 	{
-		"Il se débat trop pour injecter.",
-		"Il vous échappe",
+		"Il se debat trop pour injecter.",
+		"Il vous echappe",
 		"Il vous fuit"
 	}
 };
@@ -94,7 +94,7 @@ char * text_check_warnings[5][CHECK_WARNINGS_TEXT_LEVELS] = // value, value %
 {
 	{
 		"Il a vraiment faim",
-		"Il cherche à manger",
+		"Il cherche a manger",
 		"Il a un petit creux",
 		"En pleine digestion !"
 
@@ -102,9 +102,9 @@ char * text_check_warnings[5][CHECK_WARNINGS_TEXT_LEVELS] = // value, value %
 
 	{
 		"Il a sommeil",
-		"La fatigue commence à se faire sentir",
+		"La fatigue commence a se faire sentir",
 		"Il est en forme !",
-		"Il semble avoir de l'énergie pour des jours !"
+		"Il semble avoir de l'energie pour des jours !"
 	},
 
 	{
@@ -116,16 +116,16 @@ char * text_check_warnings[5][CHECK_WARNINGS_TEXT_LEVELS] = // value, value %
 
 	{
 		"",
-		"Il est encore sous les effets des médicaments",
+		"Les medicaments font toujours effet",
 		"check drugs 2",
 		"check drugs 3"
 	},
 
 	{
-		"Il est en bonne santé",
+		"Il est en bonne sante",
 		"Il a l'air un peu faible",
-		"Ça n'a pas l'air d'aller...",
-		"Il est en piteux état"
+		"ca n'a pas l'air d'aller...",
+		"Il est en piteux etat"
 	},
 };
 
@@ -133,49 +133,51 @@ char * text_fun_refusal[] =
 {
 	"Il rechigne.",
 	"Vous lui faites peur",
-	"Il hésite",
+	"Il hesite",
 };
 
 char * text_fun[] =
 {
 	"Vous le peignez affectueusement.",
-	"Vous le décoiffez affectueusement.",
-	"Il pétrit le sol de ses pattes.",
+	"Vous le decoiffez affectueusement.",
+	"Il petrit le sol de ses pattes.",
 	"Il court tout autour de vous."	,
 	"Il regarde quelque-chose au loin.",
 	"Il rêvasse",
     "Vous le bercez",
     "Vous le câlinez.",
-    "Il vous regarde intensément.",
+    "Il vous regarde intensement.",
     "Il se laisse aller et tourne en rond.",
     "Il faufile entre vos jambes.",
     "Il vous fait une petite grimace.",
-    "Il se dresse sur ses pattes arrières.",
+    "Il se dresse sur ses pattes arrieres.",
     "Il vous donne un petit coup de langue.",
-    "Il s'accroche à votre épaule."
+    "Il s'accroche a votre epaule."
 };
 
 char * text_dead[] =
 {
 	"Il est mort",
 	"Le corps est froid",
-	"Il faut nettoyer ça"
+	"Il faut nettoyer ca"
 };
 
 //~ #define CANCEL_BECAUSE_DEAD text_dead[0]
 #define CANCEL_BECAUSE_DEAD random_text_in(text_dead)
 #define CLEAN_ALREADY "C'est propre."
-#define CLEAN_BETTER "C'est déjà mieux comme ça."
+#define CLEAN_BETTER "C'est deja mieux comme ca."
 #define LIGHT_OFF "Au lit !"
 #define LIGHT_ON "Debout !"
 
-#define OVERRIDE_SICK "Il est tombé malade..."
+#define OVERRIDE_SICK "Il est tombe malade..."
 #define OVERRIDE_FOUGHT "Ces blessures... il s'est battu."
 #define OVERRIDE_NEXT_STAGE "Il a grandi !"
 
 char * not_yet_hatched[] =
 {
-	"L'éclosion ne devrait plus tarder !",
-	"Quand éclora-t-il ?",
+	"L'eclosion ne devrait plus tarder !",
+	"Quand eclora-t-il ?",
 	"Il n'est encore qu'un oeuf"
 };
+
+#define MEDS_DISTRIBUTED "Des medicaments pour tout le monde !"
