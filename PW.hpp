@@ -47,8 +47,8 @@ namespace PW{
 					int anim_len;
 
 				public:
-					Animation(int set_pos_x, int set_pos_y, void** set_anim, int dim_x, int dim_y);
-					void next_frame();
+					Animation(int set_pos_x, int set_pos_y, void** set_anim, int lenght, int dim_x, int dim_y);
+					int next_frame();
 					~Animation();
 			};
 

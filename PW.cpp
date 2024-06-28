@@ -62,13 +62,13 @@ namespace PW{
 	    hide();
 	}
 
-	    Animation::Animation(int set_pos_x, int set_pos_y, void** set_anim, int dim_x, int dim_y) : Image(set_pos_x, set_pos_y, set_anim[0], dim_x, dim_y){
+	    Animation::Animation(int set_pos_x, int set_pos_y, void** set_anim, int lenght, int dim_x, int dim_y) : Image(set_pos_x, set_pos_y, set_anim[0], dim_x, dim_y){
 		anim = set_anim;
 		current_frame = 0;
-		anim_len = sizeof(set_anim)/sizeof(set_anim[0]);
+		anim_len = lenght-1;
 	    }
 
-		void Animation::next_frame(){
+		int Animation::next_frame(){
 		    hide();
 		    current_frame++;
 		    if (current_frame > anim_len){
@@ -76,6 +76,7 @@ namespace PW{
 		    }
 		    image = (void*)anim[current_frame];
 		    display();
+		    return current_frame;
 		}
 
 	    Animation::~Animation(){

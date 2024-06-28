@@ -97,7 +97,23 @@ namespace tama_callbacks{
         HERE
         Serial.println(((tama*)current_element)->fragility);
         Serial.println(((tama*)current_element)->disease_type);
+        int remem_x = to_animate[0]->get_pos_x();
+        int remem_y = to_animate[0]->get_pos_y();
+        to_animate[0]->change_pos(128, 64);
+        PW::Animation answer(76, 16, (void**)animation_tama_2_2_event, 4, 48, 48);
+        answer.display();
+        HERE
+        for (int i = 0 ; i < 5 ; i++){
 
+        Serial.println(answer.next_frame());
+        delay(300);
+        }
+        HERE
+        while (answer.next_frame() != 0){
+            delay(300);
+        }
+        answer.hide();
+        to_animate[0]->change_pos(remem_x, remem_y);
     }
 
     void light(){
@@ -184,7 +200,7 @@ PW::CursorMenu* create_box_menu(box* b){
     box_menu->add_child(new PW::Image(0, 0, (void*)image_icon_back, 16, 16), 0, 0, 1, 1, box_callbacks::back);
     box_menu->add_child(new PW::Image(20, 0, (void*)image_icon_feed, 16, 16), 1, 0, 1, 1, box_callbacks::feed);
     box_menu->add_child(new PW::Image(40, 0, (void*)image_icon_check, 16, 16), 2, 0, 1, 1, box_callbacks::check);
-    box_menu->add_child(new PW::Animation(0, 20, (void**)animation_icon_light, 16, 16), 0, 1, 1, 1, box_callbacks::light);
+    box_menu->add_child(new PW::Animation(0, 20, (void**)animation_icon_light, 2, 16, 16), 0, 1, 1, 1, box_callbacks::light);
     box_menu->add_child(new PW::Image(20, 20, (void*)image_icon_rake, 16, 16), 1, 1, 1, 1, box_callbacks::clean);
     box_menu->add_child(new PW::Image(40, 20, (void*)image_icon_inject, 16, 16), 2, 1, 1, 1, box_callbacks::inject);
 
@@ -205,10 +221,10 @@ PW::CursorMenu* create_box_menu(box* b){
                 break;
 
             case 3:
-
+                animation_to_place = (void**)animation_tama_2_2_mini;
                 break;
         }
-        PW::Animation* widget = new PW::Animation(((i%4)*12)+12, (i/4)*12, animation_to_place, 12, 12);
+        PW::Animation* widget = new PW::Animation(((i%4)*12)+12, (i/4)*12, animation_to_place, 2, 12, 12);
         to_animate.push_back(widget);
         tama_selector->add_child(widget, (i%4)+1, (i/4), 1, 1, switch_to_tama_menu);
     }
@@ -247,11 +263,11 @@ PW::CursorMenu* create_tama_menu(tama* t){
             break;
 
         case 3:
-        break;
-    }
             animation = (void**)animation_tama_2_2_idle;
+            break;
+    }
 
-    PW::Animation* tama_animation = new PW::Animation(68, -8, animation, 48, 48);
+    PW::Animation* tama_animation = new PW::Animation(68, -8, animation, 2, 48, 48);
     tama_menu->add_child(tama_animation, 4, 0, 1, 1, NULL);
 
     to_animate.push_back(tama_animation);
@@ -259,7 +275,7 @@ PW::CursorMenu* create_tama_menu(tama* t){
     tama_menu->add_child(new PW::Image(0, 0, (void*)image_icon_back, 16, 16), 0, 0, 1, 1, tama_callbacks::back);
     tama_menu->add_child(new PW::Image(20, 0, (void*)image_icon_feed, 16, 16), 1, 0, 1, 1, tama_callbacks::feed);
     tama_menu->add_child(new PW::Image(40, 0, (void*)image_icon_check, 16, 16), 2, 0, 1, 1, tama_callbacks::check);
-    tama_menu->add_child(new PW::Animation(0, 20, (void**)animation_icon_light, 16, 16), 0, 1, 1, 1, tama_callbacks::light);
+    tama_menu->add_child(new PW::Animation(0, 20, (void**)animation_icon_light, 2, 16, 16), 0, 1, 1, 1, tama_callbacks::light);
     tama_menu->add_child(new PW::Image(20, 20, (void*)image_icon_rake, 16, 16), 1, 1, 1, 1, tama_callbacks::clean);
     tama_menu->add_child(new PW::Image(40, 20, (void*)image_icon_inject, 16, 16), 2, 1, 1, 1, tama_callbacks::inject);
 

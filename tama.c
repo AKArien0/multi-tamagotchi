@@ -33,6 +33,10 @@ void init_box(box* target){
 
 void tama_advance_second(tama *t){
 
+	if (t->form == 0){
+		return;
+}
+
 	if (t->disease_type == DISEASE_DEAD){
 		t->next_check_override = random_text_in(text_dead);
 		return;
@@ -152,24 +156,33 @@ void tama_advance_second(tama *t){
 		t->disease_time_left--;
 	}
 
-	if (!t->age%(2*24*60*60)){ // update form
+	if (t->age > 1800 && t->form == 0){
+		t->form = 1;
 		t->next_check_override = OVERRIDE_NEXT_STAGE;
-		switch (t->form){
-			case 0: // egg
-				t->form++;
-				break;
-
-			case 1: // baby
-				t->form += 1 + rand()%2;
-
-			case 2: // child type 1
-				t->form += 1 + rand()%3;
-
-			case 3: //child type 2
-				t->form += 4 + rand()%3;
-		}
-
 	}
+
+	if (t->age > 2*24*60*60 && t->form == 1){
+		t->form = 2+rand()%2;
+		t->next_check_override = OVERRIDE_NEXT_STAGE;
+	}
+
+	//~ if (!t->age%(2*24*60*60)){ // update form
+		//~ switch (t->form){
+			//~ case 0: // egg
+				//~ t->form++;
+				//~ break;
+
+			//~ case 1: // baby
+				//~ t->form += 1 + rand()%2;
+
+			//~ case 2: // child type 1
+				//~ t->form += 1 + rand()%3;
+
+			//~ case 3: //child type 2
+				//~ t->form += 4 + rand()%3;
+		//~ }
+
+	//~ }
 }
 
 void box_advance_second(box *b){
@@ -191,6 +204,10 @@ void box_advance_second(box *b){
 }
 
 char *feed(tama *t, int value){
+
+	if (t->form == 0){
+		return random_text_in(not_yet_hatched);
+	}
 
 	if (t->disease_type == DISEASE_DEAD){
 		return CANCEL_BECAUSE_DEAD;
@@ -242,6 +259,11 @@ char *feed(tama *t, int value){
 }
 
 char *inject(tama *t, int inj_id, int time){
+
+	if (t->form == 0){
+		return random_text_in(not_yet_hatched);
+	}
+
 	if (t->drugs_time > 300){
 		return random_text_in(text_inject[INJECT_STOP]);
 	}
@@ -268,6 +290,10 @@ char *inject(tama *t, int inj_id, int time){
 
 char *check(tama *t){
 
+	if (t->form == 0){
+		return random_text_in(not_yet_hatched);
+	}
+
 	if (t->disease_type == DISEASE_DEAD){
 		return CANCEL_BECAUSE_DEAD;
 	}
@@ -292,23 +318,25 @@ char *check(tama *t){
 				return text_check_warnings[CHECK_SLEEP][(int)(((float)t->sleep/(MAX_SLEEP+t->sleep))*CHECK_WARNINGS_TEXT_LEVELS)];
 
 			case CHECK_DISEASE:
-				return "this";
+				if (t->disease_type == 0){
+					return text_check_warnings[CHECK_DISEASE][0];
+				}
+				else{
+					return text_check_warnings[CHECK_DISEASE][1];
+				}
 
 			case CHECK_DRUGS:
-				return "that";
+				if (t->drugs_time == 0){
+					return text_check_warnings[CHECK_DRUGS][0];
+				}
+				else{
+					return text_check_warnings[CHECK_DRUGS][1];
+				}
 
 			case CHECK_FRAGILITY:
 				return text_check_warnings[CHECK_FRAGILITY][(int)(((float)t->fragility/(FRAGILITY_DEATH_BORDER+t->fragility))*CHECK_WARNINGS_TEXT_LEVELS)];
 		}
 
-	}
-	return random_text_in(text_fun);
-}
-
-char *fun(tama *t){
-
-	if (t->disease_type == DISEASE_DEAD){
-		return CANCEL_BECAUSE_DEAD;
 	}
 
 	int refusal_score = (t->love*0.75)+(t->mood*0.25);
@@ -352,9 +380,14 @@ char *check_box(box *b){
 }
 
 char *switch_light_from_tama(tama *t){
-
+	return switch_light(t->parent);
 }
 
 char *clean_tama(tama *t){
+
+	if (t->form == 0){
+		return random_text_in(not_yet_hatched);
+	}
+
 
 }

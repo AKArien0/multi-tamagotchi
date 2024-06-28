@@ -102,30 +102,30 @@ char * text_check_warnings[5][CHECK_WARNINGS_TEXT_LEVELS] = // value, value %
 
 	{
 		"Il a sommeil",
-		"La fatigue du jour commence à se faire sentir",
+		"La fatigue commence à se faire sentir",
 		"Il est en forme !",
 		"Il semble avoir de l'énergie pour des jours !"
 	},
 
 	{
-		"check disease 0",
-		"check disease 1",
+		"Il n'est pas malade",
+		"Il est malade",
 		"check disease 2",
 		"check disease 3"
 	},
 
 	{
-		"check drugs 0",
-		"check drugs 1",
+		"",
+		"Il est encore sous les effets des médicaments",
 		"check drugs 2",
 		"check drugs 3"
 	},
 
 	{
-		"check fragility 0",
-		"check fragility 1",
-		"check fragility 2",
-		"check fragility 3"
+		"Il est en bonne santé",
+		"Il a l'air un peu faible",
+		"Ça n'a pas l'air d'aller...",
+		"Il est en piteux état"
 	},
 };
 
@@ -160,7 +160,7 @@ char * text_dead[] =
 	"Il est mort",
 	"Le corps est froid",
 	"Il faut nettoyer ça"
-}
+};
 
 //~ #define CANCEL_BECAUSE_DEAD text_dead[0]
 #define CANCEL_BECAUSE_DEAD random_text_in(text_dead)
@@ -172,3 +172,10 @@ char * text_dead[] =
 #define OVERRIDE_SICK "Il est tombé malade..."
 #define OVERRIDE_FOUGHT "Ces blessures... il s'est battu."
 #define OVERRIDE_NEXT_STAGE "Il a grandi !"
+
+char * not_yet_hatched[] =
+{
+	"L'éclosion ne devrait plus tarder !",
+	"Quand éclora-t-il ?",
+	"Il n'est encore qu'un oeuf"
+};
