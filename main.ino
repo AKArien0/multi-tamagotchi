@@ -151,6 +151,7 @@ namespace box_callbacks{
 
     void back(){
         Serial.println("box back");
+        switch_to_barn_selector();
     }
 
     void feed(){
@@ -315,6 +316,32 @@ PW::CursorMenu* create_tama_menu(tama* t){
     return tama_menu;
 }
 
+PW::CursorMenu* create_barn_menu(){
+    Serial.println("made it here");
+    PW::Image* cursor = new PW::Image(0, 0, (void*)image_big_cursor, 32, 24);
+    PW::CursorMenu* barn_menu = new PW::CursorMenu(0, 16, 5, 1, cursor, 48, 24, false);
+    barn_menu->set_cursor_move_callback(&cursor_mov_callback);
+
+    barn_menu->add_child(new PW::Image(0, 0, (void*)image_barn, 32, 24), 0, 0, 1, 1, switch_to_box_menu_from_barn);
+    barn_menu->add_child(new PW::Image(48, 0, (void*)image_barn, 32, 24), 1, 0, 1, 1, switch_to_box_menu_from_barn);
+    barn_menu->add_child(new PW::Image(96, 0, (void*)image_barn, 32, 24), 2, 0, 1, 1, switch_to_box_menu_from_barn);
+    barn_menu->add_child(new PW::Image(0, 24, (void*)image_barn, 32, 24), 0, 1, 1, 1, switch_to_box_menu_from_barn);
+    barn_menu->add_child(new PW::Image(48, 24, (void*)image_barn, 32, 24), 1, 1, 1, 1, switch_to_box_menu_from_barn);
+    barn_menu->add_child(new PW::Image(96, 24, (void*)image_barn, 32, 24), 2, 1, 1, 1, switch_to_box_menu_from_barn);
+
+    barn_menu->display();
+
+    Serial.println("made it here");
+
+    barn_menu->move_cursor_to(0, 0);
+
+    Serial.println("made it here");
+    barn_menu->add_pos(0, 0);
+
+
+    return barn_menu;
+}
+
 void switch_to_tama_menu(){
     to_animate.clear();
     screen.clearDisplay();
@@ -350,7 +377,39 @@ void switch_to_box_menu_from_tama(){
     //~ world.add_child(current_menu);
     current_menu->display();
     text_view->hide();
+}
 
+void switch_to_barn_selector(){
+    to_animate.clear();
+    screen.clearDisplay();
+    if (current_element == NULL){
+        Serial.println("Current element is null");
+    }
+    current_element = (void*)boxes;
+    if (current_menu == NULL){
+        Serial.println("Current menu is null");
+    }
+    delete current_menu;
+    current_menu = create_barn_menu();
+    current_menu->display();
+    text_view->set_text("Barns");
+}
+
+void switch_to_box_menu_from_barn(){
+    to_animate.clear();
+    screen.clearDisplay();
+    if (current_element == NULL){
+        Serial.println("Current element is null");
+    }
+    current_element = (void*)&boxes[(current_menu->get_cursor_x())];
+    if (current_menu == NULL){
+        Serial.println("Current menu is null");
+    }
+    delete current_menu;
+    current_menu = create_box_menu((box*)current_element);
+    //~ world.add_child(current_menu);
+    current_menu->display();
+    text_view->hide();
 }
 
 void setup() {
@@ -364,10 +423,6 @@ void setup() {
         Serial.println(F("SSD1306 allocation failed"));
         for(;;); // Don't proceed, loop forever
     }
-
-    screen.display();
-
-    delay(1000);
 
     screen.clearDisplay();
     screen.display();
@@ -390,8 +445,9 @@ void setup() {
     Serial.println("Creating menu");
 
     current_element = (void*)&(boxes[0]);
-    current_menu = create_box_menu((box*)current_element);
-    current_menu->display();
+    current_menu = create_barn_menu();
+    switch_to_barn_selector();
+    //~ current_menu->display();
     Serial.print(current_menu->get_pos_x());Serial.print(" ");Serial.println(current_menu->get_pos_y());
     //~ world.add_child(text_view);
     //~ world.add_child(current_menu);
